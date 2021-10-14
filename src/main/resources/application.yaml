@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /med-soft
+
+
+spring:
+  profiles:
+    active: local
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver
