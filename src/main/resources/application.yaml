@@ -8,8 +8,10 @@ spring:
   profiles:
     active: local
   jpa:
-    database: POSTGRESQL
     show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties.hibernate.jdbc.lob.non_contextual_creation: true
+    properties.hibernate.default_schema=yourschema: medsoft
+    
   datasource:
-    platform: postgres
-    driverClassName: org.postgresql.Driver
+    driver-class-name: org.postgresql.Driver

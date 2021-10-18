@@ -2,7 +2,7 @@ package com.wecode.medsoft.controllers;
 
 import java.util.List;
 
-import com.wecode.medsoft.contracts.formOfPayments.formOfPaymentResponse;
+import com.wecode.medsoft.contracts.formOfPayments.FormOfPaymentResponse;
 import com.wecode.medsoft.process.FormOfPaymentProcess;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class FormOfPaymentController {
 
     @GetMapping("/all")
     @CrossOrigin
-    public ResponseEntity<List<formOfPaymentResponse>> getAll(){
+    public ResponseEntity<List<FormOfPaymentResponse>> getAll(){
         return new ResponseEntity<>(formOfPaymentProcess.getAll(),HttpStatus.OK);
     }
 }

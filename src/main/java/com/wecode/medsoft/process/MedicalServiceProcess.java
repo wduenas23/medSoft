@@ -3,28 +3,41 @@ package com.wecode.medsoft.process;
 import java.util.ArrayList;
 import java.util.List;
 import com.wecode.medsoft.contracts.medicalServices.MedicalServiceResponse;
-import org.springframework.stereotype.Service;
+import com.wecode.medsoft.entities.Service;
+import com.wecode.medsoft.persistence.MedicalServicesRepository;
 
-@Service
+import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.extern.slf4j.Slf4j;
+
+@org.springframework.stereotype.Service
+@Slf4j
 public class MedicalServiceProcess {
+
+    private MedicalServicesRepository medicalServicesRepository;
+
+    @Autowired
+    public MedicalServiceProcess(MedicalServicesRepository medicalServicesRepository) {
+        this.medicalServicesRepository=medicalServicesRepository;
+    }
     
     public List<MedicalServiceResponse> getAllMedicalServices(){
         List<MedicalServiceResponse> medicalServices=new ArrayList<>();
         MedicalServiceResponse medicalService=new MedicalServiceResponse();
-        medicalService.setId(1);
-        medicalService.setDescription("Consulta");
-        medicalService.setCost( 35.0);
-        medicalServices.add(medicalService);
-        medicalService=new MedicalServiceResponse();
-        medicalService.setId(2);
-        medicalService.setDescription("Limpieza Facial");
-        medicalService.setCost( 50.0);
-        medicalServices.add(medicalService);
-        medicalService=new MedicalServiceResponse();
-        medicalService.setId(3);
-        medicalService.setDescription("Rinomodelación con hilos");
-        medicalService.setCost( 800.0);
-        medicalServices.add(medicalService);
-        return medicalServices;
+
+        try {
+            List<Service> services=(List<Service>) medicalServicesRepository.findAll();
+            for (Service service : services) {
+                medicalService=new MedicalServiceResponse();
+                medicalService.setId(service.getSvId());
+                medicalService.setDescription(service.getSvName());
+                medicalService.setCost(service.getSvCost());
+                medicalServices.add(medicalService);
+            }
+            return medicalServices;
+        } catch (Exception e) {
+            log.info("Error in ", e.getLocalizedMessage() + " " + e.getMessage());
+            throw e;
+        }
     }
 }

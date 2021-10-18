@@ -3,32 +3,43 @@ package com.wecode.medsoft.process;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wecode.medsoft.contracts.formOfPayments.formOfPaymentResponse;
+import com.wecode.medsoft.contracts.formOfPayments.FormOfPaymentResponse;
+import com.wecode.medsoft.entities.PaymentType;
+import com.wecode.medsoft.persistence.FormOfPaymentRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
-public class FormOfPaymentProcess {
-    
-    public List<formOfPaymentResponse> getAll(){
-        List<formOfPaymentResponse> formOfPaymentResponses=new ArrayList<>();
-        formOfPaymentResponse formOfPaymentResponse=new formOfPaymentResponse();
-        formOfPaymentResponse.setId(1);
-        formOfPaymentResponse.setDescription("Efectivo");
-        formOfPaymentResponses.add(formOfPaymentResponse);
-        formOfPaymentResponse=new formOfPaymentResponse();
-        formOfPaymentResponse.setId(2);
-        formOfPaymentResponse.setDescription("Tarjeta");
-        formOfPaymentResponses.add(formOfPaymentResponse);
-        formOfPaymentResponse=new formOfPaymentResponse();
-        formOfPaymentResponse.setId(3);
-        formOfPaymentResponse.setDescription("Transferencia");
-        formOfPaymentResponses.add(formOfPaymentResponse);
-        formOfPaymentResponse=new formOfPaymentResponse();
-        formOfPaymentResponse.setId(4);
-        formOfPaymentResponse.setDescription("BitCoins");
-        formOfPaymentResponses.add(formOfPaymentResponse);
+import lombok.extern.slf4j.Slf4j;
 
-        return formOfPaymentResponses;
+@Service
+@Slf4j
+public class FormOfPaymentProcess {
+
+    private FormOfPaymentRepository formOfPaymentRepo;
+
+    @Autowired
+    public FormOfPaymentProcess(FormOfPaymentRepository formOfPaymentRepo) {
+        this.formOfPaymentRepo=formOfPaymentRepo;
+    }
+    
+    public List<FormOfPaymentResponse> getAll(){
+        List<FormOfPaymentResponse> formOfPaymentResponses=new ArrayList<>();
+        FormOfPaymentResponse formOfPaymentResponse=null;
+        try {
+            log.info("Calling find all");
+            List<PaymentType> paymentTypes=(List<PaymentType>) formOfPaymentRepo.findAll();    
+            for (PaymentType paymentType : paymentTypes) {
+                formOfPaymentResponse=new FormOfPaymentResponse();
+                formOfPaymentResponse.setId(paymentType.getPtId());
+                formOfPaymentResponse.setDescription(paymentType.getPtName());     
+                formOfPaymentResponses.add(formOfPaymentResponse);
+            }
+            return formOfPaymentResponses;
+        } catch (Exception e) {
+            log.info("Error in ", e.getLocalizedMessage() + " " + e.getMessage());
+            throw e;
+        }
+        
     }
 }
