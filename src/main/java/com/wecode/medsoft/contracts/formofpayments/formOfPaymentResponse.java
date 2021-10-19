@@ -1,4 +1,4 @@
-package com.wecode.medsoft.contracts.formOfPayments;
+package com.wecode.medsoft.contracts.formofpayments;
 
 import lombok.Data;
 
