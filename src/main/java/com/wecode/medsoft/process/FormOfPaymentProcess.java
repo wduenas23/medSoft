@@ -3,7 +3,7 @@ package com.wecode.medsoft.process;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.wecode.medsoft.contracts.formOfPayments.FormOfPaymentResponse;
+import com.wecode.medsoft.contracts.formofpayments.FormOfPaymentResponse;
 import com.wecode.medsoft.entities.PaymentType;
 import com.wecode.medsoft.persistence.FormOfPaymentRepository;
 

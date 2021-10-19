@@ -1,4 +1,4 @@
-package com.wecode.medsoft.contracts.medicalServices;
+package com.wecode.medsoft.contracts.medicalservices;
 
 import lombok.Data;
 
@@ -8,4 +8,5 @@ public class MedicalServiceResponse {
     private int id;
     private String description;
     private Double cost;
+    private int category;
 }

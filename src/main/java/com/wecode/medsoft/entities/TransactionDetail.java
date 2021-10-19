@@ -16,13 +16,9 @@ public class TransactionDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="txd_id")
 	private Integer txdId;
-
-	@Temporal(TemporalType.DATE)
-	@Column(name="tx_created_date")
-	private Date txCreatedDate;
 
 	//bi-directional many-to-one association to Service
 	@ManyToOne
@@ -45,13 +41,6 @@ public class TransactionDetail implements Serializable {
 		this.txdId = txdId;
 	}
 
-	public Date getTxCreatedDate() {
-		return this.txCreatedDate;
-	}
-
-	public void setTxCreatedDate(Date txCreatedDate) {
-		this.txCreatedDate = txCreatedDate;
-	}
 
 	public Service getService() {
 		return this.service;

@@ -1,10 +1,19 @@
 package com.wecode.medsoft.entities;
 
 import java.io.Serializable;
-import javax.persistence.*;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 
 /**
@@ -18,7 +27,7 @@ public class Transaction implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="tx_id")
 	private Integer txId;
 
@@ -26,22 +35,22 @@ public class Transaction implements Serializable {
 	private Timestamp txDate;
 
 	@Column(name="tx_discount_percentage")
-	private BigDecimal txDiscountPercentage;
+	private Double txDiscountPercentage;
 
 	@Column(name="tx_trans_client_total")
-	private BigDecimal txTransClientTotal;
+	private Double txTransClientTotal;
 
 	@Column(name="tx_trans_discount")
-	private BigDecimal txTransDiscount;
+	private Double txTransDiscount;
 
 	@Column(name="tx_trans_fee")
-	private BigDecimal txTransFee;
+	private Double txTransFee;
 
 	@Column(name="tx_trans_subtotal")
-	private BigDecimal txTransSubtotal;
+	private Double txTransSubtotal;
 
 	@Column(name="tx_trans_total")
-	private BigDecimal txTransTotal;
+	private Double txTransTotal;
 
 	//bi-directional many-to-one association to PaymentType
 	@ManyToOne
@@ -76,51 +85,51 @@ public class Transaction implements Serializable {
 		this.txDate = txDate;
 	}
 
-	public BigDecimal getTxDiscountPercentage() {
+	public Double getTxDiscountPercentage() {
 		return this.txDiscountPercentage;
 	}
 
-	public void setTxDiscountPercentage(BigDecimal txDiscountPercentage) {
+	public void setTxDiscountPercentage(Double txDiscountPercentage) {
 		this.txDiscountPercentage = txDiscountPercentage;
 	}
 
-	public BigDecimal getTxTransClientTotal() {
+	public Double getTxTransClientTotal() {
 		return this.txTransClientTotal;
 	}
 
-	public void setTxTransClientTotal(BigDecimal txTransClientTotal) {
+	public void setTxTransClientTotal(Double txTransClientTotal) {
 		this.txTransClientTotal = txTransClientTotal;
 	}
 
-	public BigDecimal getTxTransDiscount() {
+	public Double getTxTransDiscount() {
 		return this.txTransDiscount;
 	}
 
-	public void setTxTransDiscount(BigDecimal txTransDiscount) {
+	public void setTxTransDiscount(Double txTransDiscount) {
 		this.txTransDiscount = txTransDiscount;
 	}
 
-	public BigDecimal getTxTransFee() {
+	public Double getTxTransFee() {
 		return this.txTransFee;
 	}
 
-	public void setTxTransFee(BigDecimal txTransFee) {
+	public void setTxTransFee(Double txTransFee) {
 		this.txTransFee = txTransFee;
 	}
 
-	public BigDecimal getTxTransSubtotal() {
+	public Double getTxTransSubtotal() {
 		return this.txTransSubtotal;
 	}
 
-	public void setTxTransSubtotal(BigDecimal txTransSubtotal) {
+	public void setTxTransSubtotal(Double txTransSubtotal) {
 		this.txTransSubtotal = txTransSubtotal;
 	}
 
-	public BigDecimal getTxTransTotal() {
+	public Double getTxTransTotal() {
 		return this.txTransTotal;
 	}
 
-	public void setTxTransTotal(BigDecimal txTransTotal) {
+	public void setTxTransTotal(Double txTransTotal) {
 		this.txTransTotal = txTransTotal;
 	}
 

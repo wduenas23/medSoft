@@ -2,7 +2,7 @@ package com.wecode.medsoft.controllers;
 
 import java.util.List;
 
-import com.wecode.medsoft.contracts.formOfPayments.FormOfPaymentResponse;
+import com.wecode.medsoft.contracts.formofpayments.FormOfPaymentResponse;
 import com.wecode.medsoft.process.FormOfPaymentProcess;
 
 import org.springframework.beans.factory.annotation.Autowired;

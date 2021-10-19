@@ -2,7 +2,8 @@ package com.wecode.medsoft.process;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.wecode.medsoft.contracts.medicalServices.MedicalServiceResponse;
+
+import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
 import com.wecode.medsoft.entities.Service;
 import com.wecode.medsoft.persistence.MedicalServicesRepository;
 
@@ -32,6 +33,7 @@ public class MedicalServiceProcess {
                 medicalService.setId(service.getSvId());
                 medicalService.setDescription(service.getSvName());
                 medicalService.setCost(service.getSvCost());
+                medicalService.setCategory(service.getServicesCategory().getScId());
                 medicalServices.add(medicalService);
             }
             return medicalServices;

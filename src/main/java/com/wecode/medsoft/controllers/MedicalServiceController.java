@@ -2,7 +2,7 @@ package com.wecode.medsoft.controllers;
 
 import java.util.List;
 
-import com.wecode.medsoft.contracts.medicalServices.MedicalServiceResponse;
+import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
 import com.wecode.medsoft.process.MedicalServiceProcess;
 
 import org.springframework.beans.factory.annotation.Autowired;
