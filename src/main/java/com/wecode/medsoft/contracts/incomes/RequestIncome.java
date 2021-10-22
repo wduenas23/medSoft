@@ -16,4 +16,7 @@ public class RequestIncome {
     private List<Totals> totals;
     private Date txDate;
     private Double discount;
+    private String nombres;
+    private String apellidos;
+    private String telefono;
 }

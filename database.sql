@@ -67,3 +67,8 @@ create table medsoft.transaction_detail (
     FOREIGN KEY (TX_SV_ID)
       REFERENCES medsoft.services (SV_ID)
 );
+
+
+ALTER TABLE medsoft.transaction ADD tx_nombres varchar(200) NULL;
+ALTER TABLE medsoft.transaction ADD tx_apellidos varchar(200) NULL;
+ALTER TABLE medsoft.transaction ADD tx_telefono varchar(9) NULL;
