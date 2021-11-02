@@ -108,4 +108,9 @@ INSERT INTO medsoft.services (sv_name, sv_sc_id, sv_description, sv_cost, sv_cre
 INSERT INTO medsoft.services (sv_name, sv_sc_id, sv_description, sv_cost, sv_created_date) VALUES('Medium',8 , 'Medium',59 , CURRENT_DATE);
 INSERT INTO medsoft.services (sv_name, sv_sc_id, sv_description, sv_cost, sv_created_date) VALUES('Rusas',8 , 'Rusas',69 , CURRENT_DATE);
 
+
+-- agregando promociones
+INSERT INTO medsoft.services_category (sc_name,sc_description) 	VALUES ('PROMOCIONES','PROMOCIONES VARIAS');
+
+
 COMMIT;
