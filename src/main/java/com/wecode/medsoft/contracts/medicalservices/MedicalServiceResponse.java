@@ -9,4 +9,5 @@ public class MedicalServiceResponse {
     private String description;
     private Double cost;
     private int category;
+    private String categoryName;
 }

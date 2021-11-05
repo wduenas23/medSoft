@@ -17,16 +17,12 @@ public class Service implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="sv_id")
 	private Integer svId;
 
 	@Column(name="sv_cost")
 	private Double svCost;
-
-	@Temporal(TemporalType.DATE)
-	@Column(name="sv_created_date")
-	private Date svCreatedDate;
 
 	@Column(name="sv_description")
 	private String svDescription;
@@ -60,14 +56,6 @@ public class Service implements Serializable {
 
 	public void setSvCost(Double svCost) {
 		this.svCost = svCost;
-	}
-
-	public Date getSvCreatedDate() {
-		return this.svCreatedDate;
-	}
-
-	public void setSvCreatedDate(Date svCreatedDate) {
-		this.svCreatedDate = svCreatedDate;
 	}
 
 	public String getSvDescription() {

@@ -2,6 +2,7 @@ package com.wecode.medsoft.process;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -38,16 +39,38 @@ public class MedicalServiceProcess {
         try {
             List<Service> services=(List<Service>) medicalServicesRepository.findAll();
             for (Service service : services) {
-            	if(!service.getServicesCategory().getScName().equals("PROMOCIONES")) {
+            	//if(!service.getServicesCategory().getScName().equals("PROMOCIONES")) {
             		medicalService=new MedicalServiceResponse();
                     medicalService.setId(service.getSvId());
                     medicalService.setDescription(service.getSvName());
                     medicalService.setCost(service.getSvCost());
                     medicalService.setCategory(service.getServicesCategory().getScId());
+                    medicalService.setCategoryName(service.getServicesCategory().getScName());
                     medicalServices.add(medicalService);
-            	}
+            	//}
             }
             return medicalServices;
+        } catch (Exception e) {
+            log.info("Error in ", e.getLocalizedMessage() + " " + e.getMessage());
+            throw e;
+        }
+    }
+    
+    public MedicalServiceResponse getMedicalServiceById(Integer id){
+        MedicalServiceResponse medicalService=new MedicalServiceResponse();
+
+        try {
+            Service service=(Service) medicalServicesRepository.findById(id).get();
+        	if(service!=null) {
+        		medicalService=new MedicalServiceResponse();
+                medicalService.setId(service.getSvId());
+                medicalService.setDescription(service.getSvName());
+                medicalService.setCost(service.getSvCost());
+                medicalService.setCategory(service.getServicesCategory().getScId());
+                medicalService.setCategoryName(service.getServicesCategory().getScName());
+        	}
+
+            return medicalService;
         } catch (Exception e) {
             log.info("Error in ", e.getLocalizedMessage() + " " + e.getMessage());
             throw e;
@@ -78,16 +101,30 @@ public class MedicalServiceProcess {
     
     public MedicalServiceResponse editMedicalService(MedicalServiceRequest request) {
     	MedicalServiceResponse medicalServiceResponse=null;
+    	Service newMedicalService=null;
+    	ServicesCategory sc=null;
     	try {
-    		Service medicalService=medicalServicesRepository.findById(request.getId()).get();
-    		medicalService.setSvCost(request.getCost());
-    		medicalService.setSvName(request.getDescription());
-    		medicalService=medicalServicesRepository.save(medicalService);
+    		Optional<Service> medicalService=medicalServicesRepository.findById(request.getId());
+    		if(medicalService.isPresent()) {
+    			newMedicalService=medicalService.get();
+    			sc=this.categoryRepository.findById(request.getCategory()).get();
+    			newMedicalService.setSvCost(request.getCost());
+    			newMedicalService.setSvName(request.getDescription());
+    			newMedicalService.setServicesCategory(sc);
+    		}else {
+    			newMedicalService=new Service();
+    			newMedicalService.setSvCost(request.getCost());
+    			newMedicalService.setSvName(request.getDescription());
+    			newMedicalService.setSvDescription(request.getDescription());
+    			sc=this.categoryRepository.findById(request.getCategory()).get();
+    			newMedicalService.setServicesCategory(sc);
+    		}
+    		newMedicalService=medicalServicesRepository.save(newMedicalService);
     		medicalServiceResponse=new MedicalServiceResponse();
-    		medicalServiceResponse.setCategory(medicalService.getServicesCategory().getScId());
-    		medicalServiceResponse.setCost(medicalService.getSvCost());
-    		medicalServiceResponse.setDescription(medicalService.getSvName());
-    		medicalServiceResponse.setId(medicalService.getSvId());
+    		medicalServiceResponse.setCategory(newMedicalService.getServicesCategory().getScId());
+    		medicalServiceResponse.setCost(newMedicalService.getSvCost());
+    		medicalServiceResponse.setDescription(newMedicalService.getSvName());
+    		medicalServiceResponse.setId(newMedicalService.getSvId());
     		return medicalServiceResponse;
 		} catch (Exception e) {
 			log.info("Error in ", e.getLocalizedMessage() + " " + e.getMessage());
