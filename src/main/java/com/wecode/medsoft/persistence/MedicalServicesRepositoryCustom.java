@@ -7,9 +7,10 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-public interface MedicalServicesRepository extends CrudRepository<Service,Integer> {
+public interface MedicalServicesRepositoryCustom {
     
-	List<Service> findByServicesCategory(ServicesCategory servicesCategory);
+	List<Service> findActivePromotions();
+	List<Service> findActiveServices();
 	
 	
 }

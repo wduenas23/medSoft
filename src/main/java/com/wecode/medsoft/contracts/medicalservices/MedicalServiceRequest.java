@@ -9,4 +9,5 @@ public class MedicalServiceRequest {
     private String description;
     private Double cost;
     private int category;
+    private boolean valid;
 }

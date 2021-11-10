@@ -34,6 +34,12 @@ public class MedicalServiceController {
         return new ResponseEntity<>(medicalServiceProcess.getAllMedicalServices(),HttpStatus.OK);
     }
     
+    @GetMapping("/all-active")
+    @CrossOrigin
+    public ResponseEntity<List<MedicalServiceResponse>> getAllActiveMedicalServices(){
+        return new ResponseEntity<>(medicalServiceProcess.getAllActiveMedicalServices(),HttpStatus.OK);
+    }
+    
     @GetMapping("/byId")
     @CrossOrigin
     public ResponseEntity<MedicalServiceResponse> getMedicalServiceById(@RequestParam Integer id){

@@ -28,6 +28,7 @@ create table medsoft.services(
 	SV_SC_ID INT not null,
 	SV_DESCRIPTION VARCHAR(200) not null,
 	SV_COST numeric not null,
+	SV_VALID boolean NOT NULL DEFAULT true,
 	SV_CREATED_DATE DATE not null default current_DATE,
 	FOREIGN KEY (SV_SC_ID)
       REFERENCES medsoft.services_category (SC_ID)

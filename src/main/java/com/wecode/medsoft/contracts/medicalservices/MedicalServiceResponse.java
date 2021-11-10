@@ -10,4 +10,5 @@ public class MedicalServiceResponse {
     private Double cost;
     private int category;
     private String categoryName;
+    private boolean valid;
 }

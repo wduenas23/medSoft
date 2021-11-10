@@ -13,6 +13,7 @@ import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
 import com.wecode.medsoft.entities.Service;
 import com.wecode.medsoft.entities.ServicesCategory;
 import com.wecode.medsoft.persistence.MedicalServicesRepository;
+import com.wecode.medsoft.persistence.MedicalServicesRepositoryCustom;
 import com.wecode.medsoft.persistence.ServiceCategoryRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,13 +24,14 @@ import lombok.extern.slf4j.Slf4j;
 public class MedicalServiceProcess {
 
     private MedicalServicesRepository medicalServicesRepository;
+    private MedicalServicesRepositoryCustom customImplementation;
     private ServiceCategoryRepository categoryRepository;
-    private final static String PROMOCATEGORYNAME="PROMOCIONES";
-
+    
     @Autowired
-    public MedicalServiceProcess(MedicalServicesRepository medicalServicesRepository,ServiceCategoryRepository categoryRepository) {
+    public MedicalServiceProcess(MedicalServicesRepository medicalServicesRepository,ServiceCategoryRepository categoryRepository,MedicalServicesRepositoryCustom customImplementation) {
         this.medicalServicesRepository=medicalServicesRepository;
         this.categoryRepository=categoryRepository;
+        this.customImplementation=customImplementation;
     }
     
     public List<MedicalServiceResponse> getAllMedicalServices(){
@@ -39,15 +41,37 @@ public class MedicalServiceProcess {
         try {
             List<Service> services=(List<Service>) medicalServicesRepository.findAll();
             for (Service service : services) {
-            	//if(!service.getServicesCategory().getScName().equals("PROMOCIONES")) {
-            		medicalService=new MedicalServiceResponse();
-                    medicalService.setId(service.getSvId());
-                    medicalService.setDescription(service.getSvName());
-                    medicalService.setCost(service.getSvCost());
-                    medicalService.setCategory(service.getServicesCategory().getScId());
-                    medicalService.setCategoryName(service.getServicesCategory().getScName());
-                    medicalServices.add(medicalService);
-            	//}
+        		medicalService=new MedicalServiceResponse();
+                medicalService.setId(service.getSvId());
+                medicalService.setDescription(service.getSvName());
+                medicalService.setCost(service.getSvCost());
+                medicalService.setCategory(service.getServicesCategory().getScId());
+                medicalService.setCategoryName(service.getServicesCategory().getScName());
+                medicalService.setValid(service.getSvValid());
+                medicalServices.add(medicalService);
+            }
+            return medicalServices;
+        } catch (Exception e) {
+            log.info("Error in ", e.getLocalizedMessage() + " " + e.getMessage());
+            throw e;
+        }
+    }
+    
+    public List<MedicalServiceResponse> getAllActiveMedicalServices(){
+        List<MedicalServiceResponse> medicalServices=new ArrayList<>();
+        MedicalServiceResponse medicalService=new MedicalServiceResponse();
+
+        try {
+            List<Service> services=(List<Service>) customImplementation.findActiveServices();
+            for (Service service : services) {
+        		medicalService=new MedicalServiceResponse();
+                medicalService.setId(service.getSvId());
+                medicalService.setDescription(service.getSvName());
+                medicalService.setCost(service.getSvCost());
+                medicalService.setCategory(service.getServicesCategory().getScId());
+                medicalService.setCategoryName(service.getServicesCategory().getScName());
+                medicalService.setValid(service.getSvValid());
+                medicalServices.add(medicalService);
             }
             return medicalServices;
         } catch (Exception e) {
@@ -68,6 +92,7 @@ public class MedicalServiceProcess {
                 medicalService.setCost(service.getSvCost());
                 medicalService.setCategory(service.getServicesCategory().getScId());
                 medicalService.setCategoryName(service.getServicesCategory().getScName());
+                medicalService.setValid(service.getSvValid());
         	}
 
             return medicalService;
@@ -82,14 +107,14 @@ public class MedicalServiceProcess {
         MedicalServiceResponse medicalService=new MedicalServiceResponse();
 
         try {
-        	ServicesCategory sv=categoryRepository.findByScName(PROMOCATEGORYNAME);
-            List<Service> services=(List<Service>) medicalServicesRepository.findByServicesCategory(sv);
+            List<Service> services=(List<Service>) customImplementation.findActivePromotions();
             for (Service service : services) {
                 medicalService=new MedicalServiceResponse();
                 medicalService.setId(service.getSvId());
                 medicalService.setDescription(service.getSvName());
                 medicalService.setCost(service.getSvCost());
                 medicalService.setCategory(service.getServicesCategory().getScId());
+                medicalService.setValid(service.getSvValid());
                 medicalServices.add(medicalService);
             }
             return medicalServices;
@@ -111,11 +136,13 @@ public class MedicalServiceProcess {
     			newMedicalService.setSvCost(request.getCost());
     			newMedicalService.setSvName(request.getDescription());
     			newMedicalService.setServicesCategory(sc);
+    			newMedicalService.setSvValid(request.isValid());
     		}else {
     			newMedicalService=new Service();
     			newMedicalService.setSvCost(request.getCost());
     			newMedicalService.setSvName(request.getDescription());
     			newMedicalService.setSvDescription(request.getDescription());
+    			newMedicalService.setSvValid(request.isValid());
     			sc=this.categoryRepository.findById(request.getCategory()).get();
     			newMedicalService.setServicesCategory(sc);
     		}
@@ -125,6 +152,7 @@ public class MedicalServiceProcess {
     		medicalServiceResponse.setCost(newMedicalService.getSvCost());
     		medicalServiceResponse.setDescription(newMedicalService.getSvName());
     		medicalServiceResponse.setId(newMedicalService.getSvId());
+    		medicalServiceResponse.setValid(newMedicalService.getSvValid());
     		return medicalServiceResponse;
 		} catch (Exception e) {
 			log.info("Error in ", e.getLocalizedMessage() + " " + e.getMessage());
