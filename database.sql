@@ -70,6 +70,28 @@ create table medsoft.transaction_detail (
 );
 
 
+create table medsoft.product_category(
+	PC_ID serial primary key,
+	PC_NAME VARCHAR(50) unique not null,
+	PC_DESCRIPTION VARCHAR(50) null,
+	PC_CREATED_DATE date not null default CURRENT_DATE 
+);
+
+create table medsoft.product(
+	PRD_ID serial primary key,
+	PRD_CODE VARCHAR(10) NULL,
+	PRD_PC_ID INT not null,
+	PRD_NAME VARCHAR(50) unique not null,
+	PRD_DESCRIPTION VARCHAR(50) null,
+	PRD_INVENTORY int not null,
+	PRD_COST numeric not null,
+	PRD_SELLING_PRICE numeric not null,
+	PRD_VALID boolean NOT NULL DEFAULT true,
+	PC_CREATED_DATE date not null default CURRENT_DATE,
+	FOREIGN KEY (PRD_PC_ID)
+      REFERENCES medsoft.product_category (PC_ID)
+);
+
 ALTER TABLE medsoft.transaction ADD tx_nombres varchar(200) NULL;
 ALTER TABLE medsoft.transaction ADD tx_apellidos varchar(200) NULL;
 ALTER TABLE medsoft.transaction ADD tx_telefono varchar(9) NULL;
