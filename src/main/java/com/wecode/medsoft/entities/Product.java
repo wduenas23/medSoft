@@ -1,7 +1,6 @@
 package com.wecode.medsoft.entities;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,8 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 
 /**
@@ -28,10 +25,6 @@ public class Product implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="prd_id")
 	private Integer prdId;
-
-	@Temporal(TemporalType.DATE)
-	@Column(name="pc_created_date")
-	private Date pcCreatedDate;
 
 	@Column(name="prd_code")
 	private String prdCode;
@@ -69,14 +62,6 @@ public class Product implements Serializable {
 
 	public void setPrdId(Integer prdId) {
 		this.prdId = prdId;
-	}
-
-	public Date getPcCreatedDate() {
-		return this.pcCreatedDate;
-	}
-
-	public void setPcCreatedDate(Date pcCreatedDate) {
-		this.pcCreatedDate = pcCreatedDate;
 	}
 
 	public String getPrdCode() {

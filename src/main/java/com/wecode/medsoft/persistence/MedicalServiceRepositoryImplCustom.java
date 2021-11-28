@@ -11,16 +11,15 @@ import com.wecode.medsoft.entities.Service;
 @org.springframework.stereotype.Service
 public class MedicalServiceRepositoryImplCustom implements MedicalServicesRepositoryCustom {
 
-	 @PersistenceContext // or even @Autowired
-	    private EntityManager entityManager;
-	
+	@PersistenceContext // or even @Autowired
+	private EntityManager entityManager;
+
 	@Override
 	public List<Service> findActivePromotions() {
-		String sql=null;
+		String sql = null;
 		try {
-			sql=" SELECT s from Service s "
-					+ "	where s.svValid= true and s.servicesCategory.scName='PROMOCIONES' ";
-			Query q=this.entityManager.createQuery(sql);
+			sql = " SELECT s from Service s " + "	where s.svValid= true and s.servicesCategory.scName='PROMOCIONES' ";
+			Query q = this.entityManager.createQuery(sql);
 			return (List<Service>) q.getResultList();
 		} catch (Exception e) {
 			throw e;
@@ -29,11 +28,10 @@ public class MedicalServiceRepositoryImplCustom implements MedicalServicesReposi
 
 	@Override
 	public List<Service> findActiveServices() {
-		String sql=null;
+		String sql = null;
 		try {
-			sql=" SELECT s from Service s "
-					+ "	where s.svValid= true ";
-			Query q=this.entityManager.createQuery(sql);
+			sql = " SELECT s from Service s " + "	where s.svValid= true ";
+			Query q = this.entityManager.createQuery(sql);
 			return (List<Service>) q.getResultList();
 		} catch (Exception e) {
 			throw e;

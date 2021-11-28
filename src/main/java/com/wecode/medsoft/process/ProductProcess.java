@@ -7,13 +7,17 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import com.wecode.medsoft.contracts.product.ProductPojo;
 import com.wecode.medsoft.entities.Product;
+import com.wecode.medsoft.entities.ProductCategory;
 import com.wecode.medsoft.persistence.ProductRepository;
+import com.wecode.medsoft.persistence.ProductRepositoryCustomImplementation;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,10 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductProcess {
 
 	private ProductRepository productRepository;
+	private ProductRepositoryCustomImplementation productRepositoryCustom;
 	
 	@Autowired
-	public ProductProcess(ProductRepository productRepository) {
+	public ProductProcess(ProductRepository productRepository,ProductRepositoryCustomImplementation productRepositoryCustom) {
 		this.productRepository=productRepository;
+		this.productRepositoryCustom=productRepositoryCustom;
 	}
 	
 	public ResponseEntity<List<ProductPojo>> getAllProducts(){
@@ -79,6 +85,80 @@ public class ProductProcess {
 		} catch (Exception e) {
 			log.error("Error getting product by Id",e.getMessage());
 			return new ResponseEntity<>(prd,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	public ResponseEntity<ProductPojo> editProduct(ProductPojo newProduct){
+		ProductPojo prd=null;
+		Product newPrd=null;
+		try {
+			Optional<Product> product=this.productRepository.findById(newProduct.getId());
+			if(product.isPresent()) {
+				newPrd=product.get();
+			}else {
+				newPrd=new Product();
+				ProductCategory cat=new ProductCategory();
+				cat.setPcId(newProduct.getCategoryId());
+				newPrd.setProductCategory(cat);
+			}
+			newPrd.setPrdCode(newProduct.getPrdCode());
+			newPrd.setPrdCost(newProduct.getCost());
+			newPrd.setPrdDescription(newProduct.getDescription());
+			newPrd.setPrdInventory(newProduct.getInventory());
+			newPrd.setPrdName(newProduct.getName());
+			newPrd.setPrdSellingPrice(newProduct.getSellingPrice());
+			newPrd.setPrdValid(newProduct.isValid());
+			newPrd=this.productRepository.save(newPrd);
+			prd=new ProductPojo();
+			prd.setId(newPrd.getPrdId());
+			prd.setName(newPrd.getPrdName());
+			prd.setPrdCode(newPrd.getPrdCode());
+			prd.setDescription(newPrd.getPrdDescription());
+			prd.setCategoryId(newPrd.getProductCategory().getPcId());
+			prd.setCategoryName(newPrd.getProductCategory().getPcName());
+			prd.setCost(newPrd.getPrdCost());
+			prd.setSellingPrice(newPrd.getPrdSellingPrice());
+			prd.setInventory(newPrd.getPrdInventory());
+			prd.setValid(newPrd.isPrdValid());
+			return new ResponseEntity<>(prd,HttpStatus.OK);
+			
+		}catch (DataIntegrityViolationException e) {
+			log.error("Duplicated Key",e.getMessage());
+			return new ResponseEntity<>(prd,HttpStatus.CONFLICT);
+		} catch (UnexpectedRollbackException e) {
+			log.error("Duplicated Key",e.getMessage());
+			return new ResponseEntity<>(prd,HttpStatus.CONFLICT);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			log.error("Error Savinc product",e.getMessage());
+			return new ResponseEntity<>(prd,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	public ResponseEntity<Boolean> validateProductName(String name) {
+		try {
+			List<Product> products=this.productRepositoryCustom.findPrdByName(name);
+			if(products!=null && products.size()>0) {
+				return new ResponseEntity<>(true,HttpStatus.OK);
+			}
+			return new ResponseEntity<>(false,HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("Error validateProductName",e.getMessage());
+			return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	public ResponseEntity<Boolean> validateProductByCode(String code) {
+		try {
+			List<Product> products=this.productRepositoryCustom.findPrdByCode(code);
+			if(products!=null && products.size()>0) {
+				return new ResponseEntity<>(true,HttpStatus.OK);
+			}
+			return new ResponseEntity<>(false,HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("Error validateProductName",e.getMessage());
+			return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
