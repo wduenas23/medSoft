@@ -38,6 +38,10 @@ public class PaymentType implements Serializable {
 	//bi-directional many-to-one association to Transaction
 	@OneToMany(mappedBy="paymentType")
 	private List<Transaction> transactions;
+	
+	//bi-directional many-to-one association to PaymentDetail
+	@OneToMany(mappedBy="paymentType")
+	private List<PaymentDetail> paymentDetails;
 
 	public PaymentType() {
 	}
@@ -102,6 +106,28 @@ public class PaymentType implements Serializable {
 		transaction.setPaymentType(null);
 
 		return transaction;
+	}
+	
+	public List<PaymentDetail> getPaymentDetails() {
+		return this.paymentDetails;
+	}
+
+	public void setPaymentDetails(List<PaymentDetail> paymentDetails) {
+		this.paymentDetails = paymentDetails;
+	}
+
+	public PaymentDetail addPaymentDetail(PaymentDetail paymentDetail) {
+		getPaymentDetails().add(paymentDetail);
+		paymentDetail.setPaymentType(this);
+
+		return paymentDetail;
+	}
+
+	public PaymentDetail removePaymentDetail(PaymentDetail paymentDetail) {
+		getPaymentDetails().remove(paymentDetail);
+		paymentDetail.setPaymentType(null);
+
+		return paymentDetail;
 	}
 
 }

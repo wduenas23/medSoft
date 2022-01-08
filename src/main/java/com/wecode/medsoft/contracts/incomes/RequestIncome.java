@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.wecode.medsoft.contracts.formofpayments.FormOfPaymentResponse;
 import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
+import com.wecode.medsoft.contracts.patient.PatientInfo;
 
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public class RequestIncome {
     private List<Totals> totals;
     private Date txDate;
     private Double discount;
-    private String nombres;
-    private String apellidos;
-    private String telefono;
+    private Integer id;
+    private List<PaymentDetails> paymentDetails;
+    private PatientInfo patient;
 }

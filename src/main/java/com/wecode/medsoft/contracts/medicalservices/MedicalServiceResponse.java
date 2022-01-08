@@ -11,4 +11,5 @@ public class MedicalServiceResponse {
     private int category;
     private String categoryName;
     private boolean valid;
+    private int trxdId;
 }

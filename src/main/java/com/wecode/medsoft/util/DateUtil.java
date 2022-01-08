@@ -1,5 +1,7 @@
 package com.wecode.medsoft.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -59,5 +61,8 @@ public class DateUtil {
 	    return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 	}
 	
-	
+	public static Date converDate(String date) throws ParseException {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		return formatter.parse(date);
+	}
 }

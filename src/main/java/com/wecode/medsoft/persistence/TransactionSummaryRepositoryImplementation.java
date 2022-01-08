@@ -1,6 +1,7 @@
 package com.wecode.medsoft.persistence;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -8,6 +9,7 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Service;
 
+import com.wecode.medsoft.entities.Transaction;
 import com.wecode.medsoft.util.DateUtil;
 
 @Service
@@ -45,6 +47,38 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 			throw e;
 		}
 		
+	}
+
+
+
+	@Override
+	public List<Transaction> getDailyTransactions() {
+		String sql=null;
+		try {
+			sql=" SELECT t from Transaction t where t.txDate between :date1 and :date2";
+			Query q=this.entityManager.createQuery(sql);
+			q.setParameter("date1", DateUtil.atStartOfDay(new Date()));
+			q.setParameter("date2", DateUtil.atEndOfDay(new Date()));
+			return q.getResultList();	
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+
+
+	@Override
+	public List<Transaction> getDailyTransactionsDateRange(Date start, Date end) {
+		String sql=null;
+		try {
+			sql=" SELECT t from Transaction t where t.txDate between :date1 and :date2";
+			Query q=this.entityManager.createQuery(sql);
+			q.setParameter("date1", DateUtil.atStartOfDay(start));
+			q.setParameter("date2", DateUtil.atEndOfDay(end));
+			return q.getResultList();	
+		} catch (Exception e) {
+			throw e;
+		}
 	}
 	
 	

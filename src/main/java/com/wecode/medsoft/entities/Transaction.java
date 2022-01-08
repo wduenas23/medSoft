@@ -76,6 +76,14 @@ public class Transaction implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="tx_tc_id")
 	private TransactionCategory transactionCategory;
+	
+	//bi-directional many-to-one association to PaymentDetail
+	@OneToMany(mappedBy="transaction")
+	private List<PaymentDetail> paymentDetails;
+	
+	@ManyToOne
+	@JoinColumn(name="tx_pnt_id")
+	private Patient patient;
 
 	public Transaction() {
 	}
@@ -204,6 +212,37 @@ public class Transaction implements Serializable {
 
 	public void setTransactionCategory(TransactionCategory transactionCategory) {
 		this.transactionCategory = transactionCategory;
+	}
+
+
+	public List<PaymentDetail> getPaymentDetails() {
+		return this.paymentDetails;
+	}
+
+	public void setPaymentDetails(List<PaymentDetail> paymentDetails) {
+		this.paymentDetails = paymentDetails;
+	}
+
+	public PaymentDetail addPaymentDetail(PaymentDetail paymentDetail) {
+		getPaymentDetails().add(paymentDetail);
+		paymentDetail.setTransaction(this);
+
+		return paymentDetail;
+	}
+
+	public PaymentDetail removePaymentDetail(PaymentDetail paymentDetail) {
+		getPaymentDetails().remove(paymentDetail);
+		paymentDetail.setTransaction(null);
+
+		return paymentDetail;
+	}
+	
+	public Patient getPatient() {
+		return this.patient;
+	}
+
+	public void setPatient(Patient patient) {
+		this.patient = patient;
 	}
 
 }
