@@ -1,15 +1,8 @@
 package com.wecode.medsoft.entities;
 
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
+import java.util.Date;
 
 
 /**
@@ -22,9 +15,12 @@ public class Product implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="prd_id")
 	private Integer prdId;
+
+	@Column(name="prd_active")
+	private Boolean prdActive;
 
 	@Column(name="prd_code")
 	private String prdCode;
@@ -32,8 +28,19 @@ public class Product implements Serializable {
 	@Column(name="prd_cost")
 	private Double prdCost;
 
+	@Temporal(TemporalType.DATE)
+	@Column(name="prd_created_date")
+	private Date prdCreatedDate;
+
 	@Column(name="prd_description")
 	private String prdDescription;
+
+	@Temporal(TemporalType.DATE)
+	@Column(name="prd_expiration")
+	private Date prdExpiration;
+
+	@Column(name="prd_image_url")
+	private String prdImageUrl;
 
 	@Column(name="prd_inventory")
 	private Integer prdInventory;
@@ -41,17 +48,21 @@ public class Product implements Serializable {
 	@Column(name="prd_name")
 	private String prdName;
 
+	@Column(name="prd_promotion_price")
+	private Double prdPromotionPrice;
+
 	@Column(name="prd_selling_price")
 	private Double prdSellingPrice;
 
-	@Column(name = "prd_valid")
-	private boolean prdValid;
-	
-	
 	//bi-directional many-to-one association to ProductCategory
 	@ManyToOne
 	@JoinColumn(name="prd_pc_id")
 	private ProductCategory productCategory;
+
+	//bi-directional many-to-one association to ProductFactory
+	@ManyToOne
+	@JoinColumn(name="prd_ft_id")
+	private ProductFactory productFactory;
 
 	public Product() {
 	}
@@ -62,6 +73,14 @@ public class Product implements Serializable {
 
 	public void setPrdId(Integer prdId) {
 		this.prdId = prdId;
+	}
+
+	public Boolean getPrdActive() {
+		return this.prdActive;
+	}
+
+	public void setPrdActive(Boolean prdActive) {
+		this.prdActive = prdActive;
 	}
 
 	public String getPrdCode() {
@@ -80,12 +99,36 @@ public class Product implements Serializable {
 		this.prdCost = prdCost;
 	}
 
+	public Date getPrdCreatedDate() {
+		return this.prdCreatedDate;
+	}
+
+	public void setPrdCreatedDate(Date prdCreatedDate) {
+		this.prdCreatedDate = prdCreatedDate;
+	}
+
 	public String getPrdDescription() {
 		return this.prdDescription;
 	}
 
 	public void setPrdDescription(String prdDescription) {
 		this.prdDescription = prdDescription;
+	}
+
+	public Date getPrdExpiration() {
+		return this.prdExpiration;
+	}
+
+	public void setPrdExpiration(Date prdExpiration) {
+		this.prdExpiration = prdExpiration;
+	}
+
+	public String getPrdImageUrl() {
+		return this.prdImageUrl;
+	}
+
+	public void setPrdImageUrl(String prdImageUrl) {
+		this.prdImageUrl = prdImageUrl;
 	}
 
 	public Integer getPrdInventory() {
@@ -104,6 +147,14 @@ public class Product implements Serializable {
 		this.prdName = prdName;
 	}
 
+	public Double getPrdPromotionPrice() {
+		return this.prdPromotionPrice;
+	}
+
+	public void setPrdPromotionPrice(Double prdPromotionPrice) {
+		this.prdPromotionPrice = prdPromotionPrice;
+	}
+
 	public Double getPrdSellingPrice() {
 		return this.prdSellingPrice;
 	}
@@ -120,12 +171,12 @@ public class Product implements Serializable {
 		this.productCategory = productCategory;
 	}
 
-	public boolean isPrdValid() {
-		return prdValid;
+	public ProductFactory getProductFactory() {
+		return this.productFactory;
 	}
 
-	public void setPrdValid(boolean prdValid) {
-		this.prdValid = prdValid;
+	public void setProductFactory(ProductFactory productFactory) {
+		this.productFactory = productFactory;
 	}
 
 }

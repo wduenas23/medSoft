@@ -51,7 +51,7 @@ public class ProductProcess {
 				prd.setCost(product.getPrdCost());
 				prd.setSellingPrice(product.getPrdSellingPrice());
 				prd.setInventory(product.getPrdInventory());
-				prd.setValid(product.isPrdValid());
+				prd.setValid(product.getPrdActive());
 				productsPojo.add(prd);
 			}
 			return new ResponseEntity<>(productsPojo,HttpStatus.OK);		
@@ -77,7 +77,7 @@ public class ProductProcess {
 				prd.setCost(product.get().getPrdCost());
 				prd.setSellingPrice(product.get().getPrdSellingPrice());
 				prd.setInventory(product.get().getPrdInventory());
-				prd.setValid(product.get().isPrdValid());
+				prd.setValid(product.get().getPrdActive());
 				return new ResponseEntity<>(prd,HttpStatus.OK);
 			}else {
 				return new ResponseEntity<>(prd,HttpStatus.NO_CONTENT);
@@ -107,7 +107,7 @@ public class ProductProcess {
 			newPrd.setPrdInventory(newProduct.getInventory());
 			newPrd.setPrdName(newProduct.getName());
 			newPrd.setPrdSellingPrice(newProduct.getSellingPrice());
-			newPrd.setPrdValid(newProduct.isValid());
+			newPrd.setPrdActive(newProduct.isValid());
 			newPrd=this.productRepository.save(newPrd);
 			prd=new ProductPojo();
 			prd.setId(newPrd.getPrdId());
@@ -119,7 +119,7 @@ public class ProductProcess {
 			prd.setCost(newPrd.getPrdCost());
 			prd.setSellingPrice(newPrd.getPrdSellingPrice());
 			prd.setInventory(newPrd.getPrdInventory());
-			prd.setValid(newPrd.isPrdValid());
+			prd.setValid(newPrd.getPrdActive());
 			return new ResponseEntity<>(prd,HttpStatus.OK);
 			
 		}catch (DataIntegrityViolationException e) {

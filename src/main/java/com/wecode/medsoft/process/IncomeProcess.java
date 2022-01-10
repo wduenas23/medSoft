@@ -2,6 +2,7 @@ package com.wecode.medsoft.process;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,6 @@ import com.wecode.medsoft.persistence.PaymentDetailRepository;
 import com.wecode.medsoft.persistence.TransactionDetailRepository;
 import com.wecode.medsoft.persistence.TransactionRepository;
 import com.wecode.medsoft.persistence.TransactionSummaryRepositoryImplementation;
-import com.wecode.medsoft.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -128,9 +128,6 @@ public class IncomeProcess {
 			TransactionCategory tc=new TransactionCategory();
 			tc.setTcId(1);
 			transaction.setTransactionCategory(tc);
-			//transaction.setTxNombres(requestIncome.getNombres());
-			//transaction.setTxApellidos(requestIncome.getApellidos());
-			//transaction.setTxTelefono(requestIncome.getTelefono());
 			transaction.setTxDate(new Timestamp(requestIncome.getTxDate().getTime()));
 			transaction.setTxTransSubtotal(requestIncome.getServices().stream().mapToDouble(o -> o.getCost()).sum());
 			transaction.setTxTransDiscount(getTotal("Descuentos",requestIncome.getTotals()));
@@ -226,12 +223,13 @@ public class IncomeProcess {
 		}
 	}
 	
-	public ResponseEntity<List<ResponseIncome>> getDailyIncomesDateRange(String start, String end) throws Exception{
+	public ResponseEntity<List<ResponseIncome>> getDailyIncomesDateRange(Date start, Date end){
 		try {
 			ResponseIncome responseIncome=new ResponseIncome();
 			List<ResponseIncome> incomes=new ArrayList<>();
 			ResponseIncome income=null;
-			List<Transaction> transactions=(List<Transaction>)summaryRepository.getDailyTransactionsDateRange(DateUtil.converDate(start),DateUtil.converDate(end));
+			List<Transaction> transactions=null;
+			transactions=(List<Transaction>)summaryRepository.getDailyTransactionsDateRange(start,end);
 			if(transactions!=null && transactions.size()>0) {
 				responseIncome.setCode("200");
 				responseIncome.setMessage("SUCCESSFULL");
@@ -244,6 +242,7 @@ public class IncomeProcess {
 					
 					income.setPaymentType(transaction.getPaymentType().getPtName());
 					income.setSubTotalClient(transaction.getTxTransClientTotal());
+					income.setDate(transaction.getTxDate());
 					PatientInfo patient=new PatientInfo();
 					patient.setAddress(transaction.getPatient().getPatientContact().getPcAddress());
 					patient.setBirthday(transaction.getPatient().getPtBirthday()!=null?transaction.getPatient().getPtBirthday().toString():null);

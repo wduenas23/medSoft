@@ -17,7 +17,7 @@ public class ProductCategory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="pc_id")
 	private Integer pcId;
 

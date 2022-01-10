@@ -11,5 +11,6 @@ public interface TransactionSummaryRepository {
 	public Double getTotalMonthlyIncome();
 	public List<Transaction> getDailyTransactions();
 	public List<Transaction> getDailyTransactionsDateRange(Date start, Date end);
+	public Double getTotalIncomeByRange(Date start, Date end);
 
 }

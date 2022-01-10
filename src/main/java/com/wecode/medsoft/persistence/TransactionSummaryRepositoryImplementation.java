@@ -55,7 +55,7 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 	public List<Transaction> getDailyTransactions() {
 		String sql=null;
 		try {
-			sql=" SELECT t from Transaction t where t.txDate between :date1 and :date2";
+			sql=" SELECT t from Transaction t where t.txDate between :date1 and :date2 order by t.txDate desc";
 			Query q=this.entityManager.createQuery(sql);
 			q.setParameter("date1", DateUtil.atStartOfDay(new Date()));
 			q.setParameter("date2", DateUtil.atEndOfDay(new Date()));
@@ -71,11 +71,27 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 	public List<Transaction> getDailyTransactionsDateRange(Date start, Date end) {
 		String sql=null;
 		try {
-			sql=" SELECT t from Transaction t where t.txDate between :date1 and :date2";
+			sql=" SELECT t from Transaction t where t.txDate >= :date1 and t.txDate <= :date2 order by t.txDate desc";
 			Query q=this.entityManager.createQuery(sql);
 			q.setParameter("date1", DateUtil.atStartOfDay(start));
 			q.setParameter("date2", DateUtil.atEndOfDay(end));
 			return q.getResultList();	
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+
+
+	@Override
+	public Double getTotalIncomeByRange(Date start, Date end) {
+		String sql=null;
+		try {
+			sql=" SELECT sum(t.txTransTotal) from Transaction t where t.txDate >= :date1 and t.txDate <= :date2";
+			Query q=this.entityManager.createQuery(sql);
+			q.setParameter("date1", DateUtil.atStartOfDay(start) );
+			q.setParameter("date2", DateUtil.atEndOfDay(end));
+			return (Double) q.getSingleResult();
 		} catch (Exception e) {
 			throw e;
 		}

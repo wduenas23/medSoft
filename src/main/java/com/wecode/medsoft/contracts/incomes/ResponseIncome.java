@@ -1,5 +1,6 @@
 package com.wecode.medsoft.contracts.incomes;
 
+import java.util.Date;
 import java.util.List;
 
 import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
@@ -12,9 +13,6 @@ public class ResponseIncome {
     
     private String message;
     private String code;
-    private String name;
-    private String lastName;
-    private String phone;
     private Double subTotalClient;
     private Double txTotal;
     private String paymentType;
@@ -24,5 +22,6 @@ public class ResponseIncome {
     private List<MedicalServiceResponse> services;
     private List<PaymentDetails> paymentDetails;
     private PatientInfo patient;
+    private Date date;
     
 }

@@ -1,5 +1,7 @@
 package com.wecode.medsoft.process;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,18 @@ public class TransactionSummaryProcess {
 			summaryTransaction=new SummaryTransaction();
 			summaryTransaction.setDailySummary(this.implementation.getTotalDailyIncome());
 			summaryTransaction.setMonthlySummary(this.implementation.getTotalMonthlyIncome());
+			return new ResponseEntity<>(summaryTransaction,HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("Error in: {}",e.getMessage());
+			return new ResponseEntity<>(summaryTransaction,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	public ResponseEntity<SummaryTransaction> getSummaryTransactionByRange(Date start, Date end) {
+		SummaryTransaction summaryTransaction=null;
+		try {
+			summaryTransaction=new SummaryTransaction();
+			summaryTransaction.setRangeSummary(this.implementation.getTotalIncomeByRange(start,end));
 			return new ResponseEntity<>(summaryTransaction,HttpStatus.OK);
 		} catch (Exception e) {
 			log.error("Error in: {}",e.getMessage());

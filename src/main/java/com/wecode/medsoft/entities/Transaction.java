@@ -33,17 +33,6 @@ public class Transaction implements Serializable {
 
 	@Column(name="tx_date")
 	private Timestamp txDate;
-	
-	@Column(name="tx_nombres")
-	private String txNombres;
-	
-	@Column(name="tx_apellidos")
-	private String txApellidos;
-	
-	@Column(name="tx_telefono")
-	private String txTelefono;
-	
-	
 
 	@Column(name="tx_discount_percentage")
 	private Double txDiscountPercentage;
@@ -102,30 +91,6 @@ public class Transaction implements Serializable {
 
 	public void setTxDate(Timestamp txDate) {
 		this.txDate = txDate;
-	}
-
-	public String getTxNombres() {
-		return txNombres;
-	}
-
-	public void setTxNombres(String txNombres) {
-		this.txNombres = txNombres;
-	}
-
-	public String getTxApellidos() {
-		return txApellidos;
-	}
-
-	public void setTxApellidos(String txApellidos) {
-		this.txApellidos = txApellidos;
-	}
-
-	public String getTxTelefono() {
-		return txTelefono;
-	}
-
-	public void setTxTelefono(String txTelefono) {
-		this.txTelefono = txTelefono;
 	}
 
 	public Double getTxDiscountPercentage() {

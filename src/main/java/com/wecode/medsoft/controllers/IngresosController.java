@@ -1,4 +1,5 @@
 package com.wecode.medsoft.controllers;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class IngresosController {
     
     @GetMapping("/dailyIncomesByRange")
     @CrossOrigin
-    public ResponseEntity<List<ResponseIncome>> getDailyIncomesByRange(@RequestParam String start,@RequestParam String end){
+    public ResponseEntity<List<ResponseIncome>> getDailyIncomesByRange(@RequestParam Date start,@RequestParam Date end){
     	return incomeProcess.getDailyIncomesDateRange(start,end);
     }
     
