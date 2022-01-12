@@ -2,9 +2,11 @@ package com.wecode.medsoft;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class MedsoftApplication {
+public class MedsoftApplication extends SpringBootServletInitializer {
 
 	
 	public static void main(String[] args) {

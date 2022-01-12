@@ -1,5 +1,7 @@
 package com.wecode.medsoft.contracts.product;
 
+import java.util.Date;
+
 import lombok.Data;
 
 @Data
@@ -15,5 +17,9 @@ public class ProductPojo {
 	private Double cost;
 	private Double sellingPrice;
 	private boolean valid;
+	private ProductImage file;
+	private String imageUrl;
+	private Date expiDate;
+	
 	
 }

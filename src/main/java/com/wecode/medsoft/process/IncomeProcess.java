@@ -192,6 +192,8 @@ public class IncomeProcess {
 					patient.setName(transaction.getPatient().getPtName());
 					patient.setPhone(transaction.getPatient().getPatientContact().getPcPhoneNumber());;
 					income.setPatient(patient);
+					income.setDiscount(transaction.getTxTransDiscount());
+					income.setComission(transaction.getTxTransFee());
 					//income.setPhone(transaction.getTxTelefono());
 					//income.setLastName(transaction.getTxApellidos());
 					//income.setName(transaction.getTxNombres());
@@ -251,6 +253,8 @@ public class IncomeProcess {
 					patient.setName(transaction.getPatient().getPtName());
 					patient.setPhone(transaction.getPatient().getPatientContact().getPcPhoneNumber());
 					income.setPatient(patient);
+					income.setDiscount(transaction.getTxTransDiscount());
+					income.setComission(transaction.getTxTransFee());
 					//income.setPhone(transaction.getTxTelefono());
 					//income.setLastName(transaction.getTxApellidos());
 					//income.setName(transaction.getTxNombres());

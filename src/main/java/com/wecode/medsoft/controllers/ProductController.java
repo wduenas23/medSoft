@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wecode.medsoft.contracts.product.ProductCategoryPojo;
+import com.wecode.medsoft.contracts.product.ProductFactoryPojo;
 import com.wecode.medsoft.contracts.product.ProductPojo;
 import com.wecode.medsoft.process.ProductCategoryProcess;
 import com.wecode.medsoft.process.ProductProcess;
@@ -44,6 +45,12 @@ public class ProductController {
     @CrossOrigin
     public ResponseEntity<List<ProductCategoryPojo>> getAllProductCategories(){
 		return categoryProcess.getAllProductCategory();
+	}
+	
+	@GetMapping("/factory/all")
+    @CrossOrigin
+    public ResponseEntity<List<ProductFactoryPojo>> getAll(){
+		return process.getAllProductFactory();
 	}
 	
 	@GetMapping("/validateName")

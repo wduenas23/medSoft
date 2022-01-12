@@ -1,11 +1,17 @@
 package com.wecode.medsoft.process;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -13,9 +19,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wecode.medsoft.contracts.product.ProductFactoryPojo;
 import com.wecode.medsoft.contracts.product.ProductPojo;
 import com.wecode.medsoft.entities.Product;
 import com.wecode.medsoft.entities.ProductCategory;
+import com.wecode.medsoft.entities.ProductFactory;
+import com.wecode.medsoft.persistence.ProductFactoryRepository;
 import com.wecode.medsoft.persistence.ProductRepository;
 import com.wecode.medsoft.persistence.ProductRepositoryCustomImplementation;
 
@@ -28,11 +38,13 @@ public class ProductProcess {
 
 	private ProductRepository productRepository;
 	private ProductRepositoryCustomImplementation productRepositoryCustom;
+	private ProductFactoryRepository productFactoryRepository;
 	
 	@Autowired
-	public ProductProcess(ProductRepository productRepository,ProductRepositoryCustomImplementation productRepositoryCustom) {
+	public ProductProcess(ProductRepository productRepository,ProductRepositoryCustomImplementation productRepositoryCustom,ProductFactoryRepository productFactoryRepository) {
 		this.productRepository=productRepository;
 		this.productRepositoryCustom=productRepositoryCustom;
+		this.productFactoryRepository=productFactoryRepository;
 	}
 	
 	public ResponseEntity<List<ProductPojo>> getAllProducts(){
@@ -93,6 +105,11 @@ public class ProductProcess {
 		Product newPrd=null;
 		try {
 			Optional<Product> product=this.productRepository.findById(newProduct.getId());
+			
+			
+			fileToBase64StringConversion(newProduct.getImageUrl().split(",")[1]);
+			//FileUtils.writeByteArrayToFile(new File(outputFileName), decodedBytes);
+			
 			if(product.isPresent()) {
 				newPrd=product.get();
 			}else {
@@ -161,4 +178,39 @@ public class ProductProcess {
 			return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	public ResponseEntity<List<ProductFactoryPojo>> getAllProductFactory(){
+		try {
+			List<ProductFactoryPojo> prfs=new ArrayList<>();
+			ProductFactoryPojo prf=null;
+			List<ProductFactory> productFactory=(List<ProductFactory>) this.productFactoryRepository.findAll();
+			if(productFactory!=null && productFactory.size()>0) {
+				for (ProductFactory pf : productFactory) {
+					prf=new ProductFactoryPojo();
+					prf.setId(pf.getFtId());
+					prf.setName(pf.getFtName());
+					prfs.add(prf);
+				}
+				return new ResponseEntity<>(prfs,HttpStatus.OK);
+			}
+			return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+		} catch (Exception e) {
+			log.error("Error validateProductName",e.getMessage());
+			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	public void fileToBase64StringConversion(String base64Image) throws IOException {
+        // load file from /src/test/resources
+		
+		byte[] decodedBytes = Base64
+		          .getDecoder()
+		          .decode(base64Image);
+		org.apache.commons.io.FileUtils.writeByteArrayToFile(new File("preba.jpg"), decodedBytes);
+		/*try (OutputStream stream = new FileOutputStream("c:/decode/abc.jpg")) {
+		    stream.write(decodedBytes);
+		}*/
+		
+    }
+	
 }

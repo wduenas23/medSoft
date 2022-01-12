@@ -1,14 +1,14 @@
 server:
   port: 8080
   servlet:
-    context-path: /med-soft
+    context-path: /medsoft
 
 
 spring:
   profiles:
     active: local
   jpa:
-    show-sql: true
+    show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     properties.hibernate.jdbc.lob.non_contextual_creation: true
     properties.hibernate.default_schema=yourschema: medsoft
@@ -18,5 +18,6 @@ spring:
 
 logging:
   level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type: TRACE
+    root: error
+    #org.hibernate.SQL: ERROR
+    #org.hibernate.type: ERROR

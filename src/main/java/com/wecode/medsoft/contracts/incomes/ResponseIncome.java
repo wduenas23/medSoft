@@ -19,6 +19,7 @@ public class ResponseIncome {
     private Integer paymentId;
     private Integer txId;
     private Double discount;
+    private Double comission;
     private List<MedicalServiceResponse> services;
     private List<PaymentDetails> paymentDetails;
     private PatientInfo patient;
