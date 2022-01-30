@@ -15,7 +15,7 @@ public class Product implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="prd_id")
 	private Integer prdId;
 
@@ -27,10 +27,6 @@ public class Product implements Serializable {
 
 	@Column(name="prd_cost")
 	private Double prdCost;
-
-	@Temporal(TemporalType.DATE)
-	@Column(name="prd_created_date")
-	private Date prdCreatedDate;
 
 	@Column(name="prd_description")
 	private String prdDescription;
@@ -99,14 +95,7 @@ public class Product implements Serializable {
 		this.prdCost = prdCost;
 	}
 
-	public Date getPrdCreatedDate() {
-		return this.prdCreatedDate;
-	}
-
-	public void setPrdCreatedDate(Date prdCreatedDate) {
-		this.prdCreatedDate = prdCreatedDate;
-	}
-
+	
 	public String getPrdDescription() {
 		return this.prdDescription;
 	}

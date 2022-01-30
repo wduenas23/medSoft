@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wecode.medsoft.contracts.product.ProductCategoryPojo;
-import com.wecode.medsoft.contracts.product.ProductFactoryPojo;
 import com.wecode.medsoft.contracts.product.ProductPojo;
+import com.wecode.medsoft.contracts.productfactory.ProductFactoryInfo;
 import com.wecode.medsoft.process.ProductCategoryProcess;
+import com.wecode.medsoft.process.ProductFactoryProcess;
 import com.wecode.medsoft.process.ProductProcess;
 
 @RestController
@@ -23,10 +24,12 @@ public class ProductController {
 
 	private ProductProcess process;
 	private ProductCategoryProcess categoryProcess;
+	private ProductFactoryProcess productFactoryProcess;
 	
-	public ProductController(ProductProcess process,ProductCategoryProcess categoryProcess) {
+	public ProductController(ProductProcess process,ProductCategoryProcess categoryProcess,ProductFactoryProcess productFactoryProcess) {
 		this.process=process;
 		this.categoryProcess=categoryProcess;
+		this.productFactoryProcess=productFactoryProcess;
 	}
 	
 	@GetMapping("/all")
@@ -49,20 +52,33 @@ public class ProductController {
 	
 	@GetMapping("/factory/all")
     @CrossOrigin
-    public ResponseEntity<List<ProductFactoryPojo>> getAll(){
-		return process.getAllProductFactory();
+    public ResponseEntity<List<ProductFactoryInfo>> getAllProductFactory(){
+		return productFactoryProcess.getAllProductFactory();
 	}
+	
+	@GetMapping("/factory/byId")
+    @CrossOrigin
+    public ResponseEntity<ProductFactoryInfo> getProductFactoryById(@RequestParam Integer id){
+		return productFactoryProcess.getProductFactoryById(id);
+	}
+	
+	@PostMapping("/factory/edit")
+    @CrossOrigin
+    public ResponseEntity<ProductFactoryInfo> editProductFactory(@RequestBody ProductFactoryInfo productFactory){
+		return productFactoryProcess.editProductFactory(productFactory);
+	}
+	
 	
 	@GetMapping("/validateName")
     @CrossOrigin
-    public ResponseEntity<Boolean> validateName(@RequestParam String productName){
-		return process.validateProductName(productName);
+    public ResponseEntity<Boolean> validateName(@RequestParam String productName,@RequestParam Integer productId){
+		return process.validateProductName(productName,productId);
 	}
 	
 	@GetMapping("/validateCode")
     @CrossOrigin
-    public ResponseEntity<Boolean> validateCode(@RequestParam String productCode){
-		return process.validateProductByCode(productCode);
+    public ResponseEntity<Boolean> validateCode(@RequestParam String productCode,@RequestParam Integer productId){
+		return process.validateProductByCode(productCode,productId);
 	}
 	
 	@PostMapping("/edit")

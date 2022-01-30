@@ -17,14 +17,11 @@ public class ProductFactory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="ft_id")
 	private Integer ftId;
 
-	@Temporal(TemporalType.DATE)
-	@Column(name="ft_created_date")
-	private Date ftCreatedDate;
-
+	
 	@Column(name="ft_description")
 	private String ftDescription;
 
@@ -44,14 +41,6 @@ public class ProductFactory implements Serializable {
 
 	public void setFtId(Integer ftId) {
 		this.ftId = ftId;
-	}
-
-	public Date getFtCreatedDate() {
-		return this.ftCreatedDate;
-	}
-
-	public void setFtCreatedDate(Date ftCreatedDate) {
-		this.ftCreatedDate = ftCreatedDate;
 	}
 
 	public String getFtDescription() {

@@ -16,10 +16,11 @@ public class ProductPojo {
 	private Integer inventory;
 	private Double cost;
 	private Double sellingPrice;
+	private Double promotionPrice;
 	private boolean valid;
-	private ProductImage file;
-	private String imageUrl;
 	private Date expiDate;
+	private Integer drogueriaId;
+	private String drogueriaName;
 	
 	
 }

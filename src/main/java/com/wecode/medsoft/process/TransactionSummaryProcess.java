@@ -1,14 +1,18 @@
 package com.wecode.medsoft.process;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.wecode.medsoft.contracts.medicalservices.MedicalServiceCount;
 import com.wecode.medsoft.contracts.summary.SummaryTransaction;
+import com.wecode.medsoft.persistence.MedicalServicesRepository;
 import com.wecode.medsoft.persistence.TransactionSummaryRepositoryImplementation;
+import com.wecode.medsoft.util.DateUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,10 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 public class TransactionSummaryProcess {
 
 	private TransactionSummaryRepositoryImplementation implementation;
+	private MedicalServicesRepository medicalServiceRepository;
 	
 	@Autowired
-	public TransactionSummaryProcess(TransactionSummaryRepositoryImplementation implementation) {
+	public TransactionSummaryProcess(TransactionSummaryRepositoryImplementation implementation,MedicalServicesRepository medicalServiceRepository) {
 		this.implementation=implementation;
+		this.medicalServiceRepository=medicalServiceRepository;
 	}
 	
 	public ResponseEntity<SummaryTransaction> getSummaryTransaction() {
@@ -45,6 +51,15 @@ public class TransactionSummaryProcess {
 		} catch (Exception e) {
 			log.error("Error in: {}",e.getMessage());
 			return new ResponseEntity<>(summaryTransaction,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	public ResponseEntity<List<MedicalServiceCount>> getServiceCountByRange(Date start, Date end) {
+		try {
+			return new ResponseEntity<>(this.medicalServiceRepository.getServiceCountByRange(DateUtil.atStartOfDay(start), DateUtil.atEndOfDay(end)),HttpStatus.OK);
+		} catch (Exception e) {
+			log.error("Error in: {}",e.getMessage());
+			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

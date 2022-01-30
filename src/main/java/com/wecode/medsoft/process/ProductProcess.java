@@ -1,17 +1,11 @@
 package com.wecode.medsoft.process;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -19,13 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wecode.medsoft.contracts.product.ProductFactoryPojo;
 import com.wecode.medsoft.contracts.product.ProductPojo;
 import com.wecode.medsoft.entities.Product;
-import com.wecode.medsoft.entities.ProductCategory;
 import com.wecode.medsoft.entities.ProductFactory;
-import com.wecode.medsoft.persistence.ProductFactoryRepository;
 import com.wecode.medsoft.persistence.ProductRepository;
 import com.wecode.medsoft.persistence.ProductRepositoryCustomImplementation;
 
@@ -38,32 +28,33 @@ public class ProductProcess {
 
 	private ProductRepository productRepository;
 	private ProductRepositoryCustomImplementation productRepositoryCustom;
-	private ProductFactoryRepository productFactoryRepository;
 	
 	@Autowired
-	public ProductProcess(ProductRepository productRepository,ProductRepositoryCustomImplementation productRepositoryCustom,ProductFactoryRepository productFactoryRepository) {
+	public ProductProcess(ProductRepository productRepository,ProductRepositoryCustomImplementation productRepositoryCustom) {
 		this.productRepository=productRepository;
 		this.productRepositoryCustom=productRepositoryCustom;
-		this.productFactoryRepository=productFactoryRepository;
 	}
 	
 	public ResponseEntity<List<ProductPojo>> getAllProducts(){
 		List<ProductPojo> productsPojo=new ArrayList<>();
 		ProductPojo prd=null;
 		try {
-			List<Product> products=(List<Product>)productRepository.findAll();
+			List<Product> products=(List<Product>)productRepository.findAllByOrderByProductFactoryAsc();
 			for (Product product : products) {
 				prd=new ProductPojo();
 				prd.setId(product.getPrdId());
 				prd.setName(product.getPrdName());
 				prd.setPrdCode(product.getPrdCode());
 				prd.setDescription(product.getPrdDescription());
-				prd.setCategoryId(product.getProductCategory().getPcId());
-				prd.setCategoryName(product.getProductCategory().getPcName());
 				prd.setCost(product.getPrdCost());
 				prd.setSellingPrice(product.getPrdSellingPrice());
 				prd.setInventory(product.getPrdInventory());
 				prd.setValid(product.getPrdActive());
+				prd.setPromotionPrice(product.getPrdPromotionPrice());
+				prd.setDrogueriaId(product.getProductFactory().getFtId());
+				prd.setDrogueriaName(product.getProductFactory().getFtName());
+				prd.setPromotionPrice(product.getPrdPromotionPrice());
+				prd.setExpiDate(product.getPrdExpiration());
 				productsPojo.add(prd);
 			}
 			return new ResponseEntity<>(productsPojo,HttpStatus.OK);		
@@ -84,12 +75,16 @@ public class ProductProcess {
 				prd.setName(product.get().getPrdName());
 				prd.setPrdCode(product.get().getPrdCode());
 				prd.setDescription(product.get().getPrdDescription());
-				prd.setCategoryId(product.get().getProductCategory().getPcId());
-				prd.setCategoryName(product.get().getProductCategory().getPcName());
 				prd.setCost(product.get().getPrdCost());
 				prd.setSellingPrice(product.get().getPrdSellingPrice());
 				prd.setInventory(product.get().getPrdInventory());
 				prd.setValid(product.get().getPrdActive());
+				prd.setPromotionPrice(product.get().getPrdPromotionPrice());
+				prd.setDrogueriaId(product.get().getProductFactory().getFtId());
+				prd.setDrogueriaName(product.get().getProductFactory().getFtName());
+				prd.setPromotionPrice(product.get().getPrdPromotionPrice());
+				log.error("Expiration Date {}",product.get().getPrdExpiration());
+				prd.setExpiDate(product.get().getPrdExpiration());
 				return new ResponseEntity<>(prd,HttpStatus.OK);
 			}else {
 				return new ResponseEntity<>(prd,HttpStatus.NO_CONTENT);
@@ -106,18 +101,14 @@ public class ProductProcess {
 		try {
 			Optional<Product> product=this.productRepository.findById(newProduct.getId());
 			
-			
-			fileToBase64StringConversion(newProduct.getImageUrl().split(",")[1]);
-			//FileUtils.writeByteArrayToFile(new File(outputFileName), decodedBytes);
-			
 			if(product.isPresent()) {
 				newPrd=product.get();
 			}else {
 				newPrd=new Product();
-				ProductCategory cat=new ProductCategory();
-				cat.setPcId(newProduct.getCategoryId());
-				newPrd.setProductCategory(cat);
 			}
+			ProductFactory pf=new ProductFactory();
+			pf.setFtId(newProduct.getDrogueriaId());
+			newPrd.setProductFactory(pf);
 			newPrd.setPrdCode(newProduct.getPrdCode());
 			newPrd.setPrdCost(newProduct.getCost());
 			newPrd.setPrdDescription(newProduct.getDescription());
@@ -125,18 +116,23 @@ public class ProductProcess {
 			newPrd.setPrdName(newProduct.getName());
 			newPrd.setPrdSellingPrice(newProduct.getSellingPrice());
 			newPrd.setPrdActive(newProduct.isValid());
+			newPrd.setPrdPromotionPrice(newProduct.getPromotionPrice());
+			newPrd.setPrdExpiration(newProduct.getExpiDate());
+			
 			newPrd=this.productRepository.save(newPrd);
 			prd=new ProductPojo();
 			prd.setId(newPrd.getPrdId());
 			prd.setName(newPrd.getPrdName());
 			prd.setPrdCode(newPrd.getPrdCode());
 			prd.setDescription(newPrd.getPrdDescription());
-			prd.setCategoryId(newPrd.getProductCategory().getPcId());
-			prd.setCategoryName(newPrd.getProductCategory().getPcName());
 			prd.setCost(newPrd.getPrdCost());
 			prd.setSellingPrice(newPrd.getPrdSellingPrice());
 			prd.setInventory(newPrd.getPrdInventory());
 			prd.setValid(newPrd.getPrdActive());
+			prd.setPromotionPrice(newPrd.getPrdPromotionPrice());
+			prd.setDrogueriaId(newPrd.getProductFactory().getFtId());
+			prd.setDrogueriaName(newPrd.getProductFactory().getFtName());
+			prd.setPromotionPrice(newPrd.getPrdPromotionPrice());
 			return new ResponseEntity<>(prd,HttpStatus.OK);
 			
 		}catch (DataIntegrityViolationException e) {
@@ -148,14 +144,14 @@ public class ProductProcess {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			log.error("Error Savinc product",e.getMessage());
+			log.error("Error Savinc product: {}",e.getMessage());
 			return new ResponseEntity<>(prd,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
-	public ResponseEntity<Boolean> validateProductName(String name) {
+	public ResponseEntity<Boolean> validateProductName(String name, Integer idProducto) {
 		try {
-			List<Product> products=this.productRepositoryCustom.findPrdByName(name);
+			List<Product> products=this.productRepositoryCustom.findPrdByName(name,idProducto);
 			if(products!=null && products.size()>0) {
 				return new ResponseEntity<>(true,HttpStatus.OK);
 			}
@@ -166,9 +162,9 @@ public class ProductProcess {
 		}
 	}
 	
-	public ResponseEntity<Boolean> validateProductByCode(String code) {
+	public ResponseEntity<Boolean> validateProductByCode(String code,Integer idProducto) {
 		try {
-			List<Product> products=this.productRepositoryCustom.findPrdByCode(code);
+			List<Product> products=this.productRepositoryCustom.findPrdByCode(code,idProducto);
 			if(products!=null && products.size()>0) {
 				return new ResponseEntity<>(true,HttpStatus.OK);
 			}
@@ -178,39 +174,5 @@ public class ProductProcess {
 			return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	public ResponseEntity<List<ProductFactoryPojo>> getAllProductFactory(){
-		try {
-			List<ProductFactoryPojo> prfs=new ArrayList<>();
-			ProductFactoryPojo prf=null;
-			List<ProductFactory> productFactory=(List<ProductFactory>) this.productFactoryRepository.findAll();
-			if(productFactory!=null && productFactory.size()>0) {
-				for (ProductFactory pf : productFactory) {
-					prf=new ProductFactoryPojo();
-					prf.setId(pf.getFtId());
-					prf.setName(pf.getFtName());
-					prfs.add(prf);
-				}
-				return new ResponseEntity<>(prfs,HttpStatus.OK);
-			}
-			return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-		} catch (Exception e) {
-			log.error("Error validateProductName",e.getMessage());
-			return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	public void fileToBase64StringConversion(String base64Image) throws IOException {
-        // load file from /src/test/resources
-		
-		byte[] decodedBytes = Base64
-		          .getDecoder()
-		          .decode(base64Image);
-		org.apache.commons.io.FileUtils.writeByteArrayToFile(new File("preba.jpg"), decodedBytes);
-		/*try (OutputStream stream = new FileOutputStream("c:/decode/abc.jpg")) {
-		    stream.write(decodedBytes);
-		}*/
-		
-    }
-	
+
 }

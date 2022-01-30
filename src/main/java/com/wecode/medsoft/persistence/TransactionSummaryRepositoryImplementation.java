@@ -9,6 +9,7 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Service;
 
+import com.wecode.medsoft.contracts.medicalservices.MedicalServiceCount;
 import com.wecode.medsoft.entities.Transaction;
 import com.wecode.medsoft.util.DateUtil;
 
@@ -92,6 +93,25 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 			q.setParameter("date1", DateUtil.atStartOfDay(start) );
 			q.setParameter("date2", DateUtil.atEndOfDay(end));
 			return (Double) q.getSingleResult();
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+
+
+
+	@Override
+	public List<MedicalServiceCount> getServiceCount(Date start, Date end) {
+		String sql=null;
+		try {
+			sql=" SELECT new com.wecode.medsoft.contracts.medicalservices.MedicalServiceCount(s.svName, count(s.svName))"
+					+ " from TransactionDetail td JOIN td.transaction t JOIN td.service s "
+					+ " where t.txDate >= :date1 and "
+					+ " t.txDate <= :date2 group by s.svName ";
+			Query q=this.entityManager.createQuery(sql);
+			q.setParameter("date1", DateUtil.atStartOfDay(start));
+			q.setParameter("date2", DateUtil.atEndOfDay(end));
+			return q.getResultList();	
 		} catch (Exception e) {
 			throw e;
 		}

@@ -39,7 +39,7 @@ public class MedicalServiceProcess {
         MedicalServiceResponse medicalService=new MedicalServiceResponse();
 
         try {
-            List<Service> services=(List<Service>) medicalServicesRepository.findAll();
+            List<Service> services=(List<Service>) medicalServicesRepository.findAllByOrderByServicesCategoryAsc();
             for (Service service : services) {
         		medicalService=new MedicalServiceResponse();
                 medicalService.setId(service.getSvId());

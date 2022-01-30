@@ -42,10 +42,19 @@ public class PatientProcess {
 		Patient patient=null;
 		Date birthday=null;
 		try {
-			List<Patient> patients=patientRepository.findByPtIdentification(requestIncome.getPatient().getIdentification());
+			/*List<Patient> patients=patientRepository.findByPtIdentification(requestIncome.getPatient().getIdentification());
 			if(patients!=null && patients.size()>0) {
 				return patients.get(0);
-			}		
+			}	*/	
+			
+			List<Patient> patients=patientRepository.findByPtName(requestIncome.getPatient().getName());
+			if(patients!=null && patients.size()>0) {
+				for (Patient pat : patients) {
+					if(pat.getPtLastName().equals(requestIncome.getPatient().getLastName())) {
+						return pat;
+					}
+				}
+			}
 			
 			patient=new Patient();
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");

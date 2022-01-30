@@ -114,3 +114,18 @@ INSERT INTO medsoft.services_category (sc_name,sc_description) 	VALUES ('PROMOCI
 
 
 COMMIT;
+
+
+
+
+
+
+
+--- NUEVOS CAMBIOS PARA LA NUEVA ENTREGA DE SABADO
+
+ALTER TABLE medsoft.product ALTER COLUMN prd_name TYPE varchar(200) USING prd_name::varchar;
+ALTER TABLE medsoft.product ALTER COLUMN prd_description TYPE varchar(200) USING prd_description::varchar;
+ALTER TABLE medsoft.product ALTER COLUMN prd_pc_id DROP NOT NULL;
+
+ALTER TABLE medsoft.product ALTER COLUMN prd_code TYPE varchar(50) USING prd_code::varchar;
+ALTER TABLE medsoft.product ALTER COLUMN prd_promotion_price DROP NOT NULL;

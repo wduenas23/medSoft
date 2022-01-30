@@ -5,6 +5,6 @@ import java.util.List;
 import com.wecode.medsoft.entities.Product;
 
 public interface ProductRepositoryCustom {
-	List<Product> findPrdByName(String prdName);
-	List<Product> findPrdByCode(String prdCode);
+	List<Product> findPrdByName(String prdName, Integer prdId);
+	List<Product> findPrdByCode(String prdCode, Integer prdId);
 }
