@@ -12,13 +12,10 @@ public class DateUtil {
 	public static Date startOfMonth() {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.HOUR_OF_DAY, 0); // ! clear would not reset the hour of day !
-		cal.clear(0);
-		cal.clear(0);
-		cal.clear(1);
 
 		// get start of the month
 		cal.set(Calendar.DAY_OF_MONTH, 1);
-		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
 		cal.set(Calendar.MINUTE,0);
 		cal.set(Calendar.SECOND, 1);
 		System.out.println("Start of the month:       " + cal.getTime());

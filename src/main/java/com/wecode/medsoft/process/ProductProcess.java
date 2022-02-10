@@ -42,19 +42,7 @@ public class ProductProcess {
 			List<Product> products=(List<Product>)productRepository.findAllByOrderByProductFactoryAsc();
 			for (Product product : products) {
 				prd=new ProductPojo();
-				prd.setId(product.getPrdId());
-				prd.setName(product.getPrdName());
-				prd.setPrdCode(product.getPrdCode());
-				prd.setDescription(product.getPrdDescription());
-				prd.setCost(product.getPrdCost());
-				prd.setSellingPrice(product.getPrdSellingPrice());
-				prd.setInventory(product.getPrdInventory());
-				prd.setValid(product.getPrdActive());
-				prd.setPromotionPrice(product.getPrdPromotionPrice());
-				prd.setDrogueriaId(product.getProductFactory().getFtId());
-				prd.setDrogueriaName(product.getProductFactory().getFtName());
-				prd.setPromotionPrice(product.getPrdPromotionPrice());
-				prd.setExpiDate(product.getPrdExpiration());
+				prd=buildNewPrdPojo(prd,product);
 				productsPojo.add(prd);
 			}
 			return new ResponseEntity<>(productsPojo,HttpStatus.OK);		
@@ -71,20 +59,7 @@ public class ProductProcess {
 			Optional<Product> product=this.productRepository.findById(id);
 			if(product.isPresent()) {
 				prd=new ProductPojo();
-				prd.setId(product.get().getPrdId());
-				prd.setName(product.get().getPrdName());
-				prd.setPrdCode(product.get().getPrdCode());
-				prd.setDescription(product.get().getPrdDescription());
-				prd.setCost(product.get().getPrdCost());
-				prd.setSellingPrice(product.get().getPrdSellingPrice());
-				prd.setInventory(product.get().getPrdInventory());
-				prd.setValid(product.get().getPrdActive());
-				prd.setPromotionPrice(product.get().getPrdPromotionPrice());
-				prd.setDrogueriaId(product.get().getProductFactory().getFtId());
-				prd.setDrogueriaName(product.get().getProductFactory().getFtName());
-				prd.setPromotionPrice(product.get().getPrdPromotionPrice());
-				log.error("Expiration Date {}",product.get().getPrdExpiration());
-				prd.setExpiDate(product.get().getPrdExpiration());
+				prd=buildNewPrdPojo(prd,product.get());
 				return new ResponseEntity<>(prd,HttpStatus.OK);
 			}else {
 				return new ResponseEntity<>(prd,HttpStatus.NO_CONTENT);
@@ -118,21 +93,10 @@ public class ProductProcess {
 			newPrd.setPrdActive(newProduct.isValid());
 			newPrd.setPrdPromotionPrice(newProduct.getPromotionPrice());
 			newPrd.setPrdExpiration(newProduct.getExpiDate());
-			
+			newPrd.setPrdLot(newProduct.getPrdLot());
 			newPrd=this.productRepository.save(newPrd);
 			prd=new ProductPojo();
-			prd.setId(newPrd.getPrdId());
-			prd.setName(newPrd.getPrdName());
-			prd.setPrdCode(newPrd.getPrdCode());
-			prd.setDescription(newPrd.getPrdDescription());
-			prd.setCost(newPrd.getPrdCost());
-			prd.setSellingPrice(newPrd.getPrdSellingPrice());
-			prd.setInventory(newPrd.getPrdInventory());
-			prd.setValid(newPrd.getPrdActive());
-			prd.setPromotionPrice(newPrd.getPrdPromotionPrice());
-			prd.setDrogueriaId(newPrd.getProductFactory().getFtId());
-			prd.setDrogueriaName(newPrd.getProductFactory().getFtName());
-			prd.setPromotionPrice(newPrd.getPrdPromotionPrice());
+			prd=buildNewPrdPojo(prd,newPrd);
 			return new ResponseEntity<>(prd,HttpStatus.OK);
 			
 		}catch (DataIntegrityViolationException e) {
@@ -149,6 +113,24 @@ public class ProductProcess {
 		}
 	}
 	
+	private ProductPojo buildNewPrdPojo(ProductPojo prd,Product newPrd) {
+		prd.setId(newPrd.getPrdId());
+		prd.setName(newPrd.getPrdName());
+		prd.setPrdCode(newPrd.getPrdCode());
+		prd.setDescription(newPrd.getPrdDescription());
+		prd.setCost(newPrd.getPrdCost());
+		prd.setSellingPrice(newPrd.getPrdSellingPrice());
+		prd.setInventory(newPrd.getPrdInventory());
+		prd.setValid(newPrd.getPrdActive());
+		prd.setPromotionPrice(newPrd.getPrdPromotionPrice());
+		prd.setDrogueriaId(newPrd.getProductFactory().getFtId());
+		prd.setDrogueriaName(newPrd.getProductFactory().getFtName());
+		prd.setPromotionPrice(newPrd.getPrdPromotionPrice());
+		prd.setPrdLot(newPrd.getPrdLot());
+		prd.setExpiDate(newPrd.getPrdExpiration());
+		return prd;
+	}
+
 	public ResponseEntity<Boolean> validateProductName(String name, Integer idProducto) {
 		try {
 			List<Product> products=this.productRepositoryCustom.findPrdByName(name,idProducto);

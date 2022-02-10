@@ -129,3 +129,22 @@ ALTER TABLE medsoft.product ALTER COLUMN prd_pc_id DROP NOT NULL;
 
 ALTER TABLE medsoft.product ALTER COLUMN prd_code TYPE varchar(50) USING prd_code::varchar;
 ALTER TABLE medsoft.product ALTER COLUMN prd_promotion_price DROP NOT NULL;
+ALTER TABLE medsoft.product ADD prd_lot varchar(50) NULL;
+ALTER TABLE medsoft.product DROP CONSTRAINT product_prd_name_key;
+
+
+CREATE TABLE medsoft.transaction_detail_sales (
+	txds_id serial4 NOT NULL,
+	txds_td_id int4 NOT NULL,
+	txds_prd_id int4 NOT NULL,
+	txds_created_date date NOT NULL DEFAULT CURRENT_DATE,
+	CONSTRAINT transaction_detail_sales_pkey PRIMARY KEY (txds_id)
+);
+
+
+-- medsoft.transaction_detail_sales foreign keys
+
+ALTER TABLE medsoft.transaction_detail_sales ADD CONSTRAINT transaction_detail_sales_tx_prd_id_fkey FOREIGN KEY (txds_prd_id) REFERENCES medsoft.product(prd_id);
+ALTER TABLE medsoft.transaction_detail_sales ADD CONSTRAINT transaction_detail_sales_tx_id_fkey FOREIGN KEY (txds_td_id) REFERENCES medsoft."transaction"(tx_id);
+
+ALTER TABLE medsoft."transaction" ADD tx_sale_comission numeric NULL;

@@ -21,6 +21,7 @@ public class ProductPojo {
 	private Date expiDate;
 	private Integer drogueriaId;
 	private String drogueriaName;
+	private String prdLot;
 	
 	
 }

@@ -23,7 +23,7 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 	public Double getTotalDailyIncome() {
 		String sql=null;
 		try {
-			sql=" SELECT sum(t.txTransTotal) from Transaction t where t.txDate between :date1 and :date2";
+			sql=" SELECT sum(t.txTransTotal) from Transaction t where t.txDate >= :date1 and t.txDate <= :date2 and t.transactionCategory.tcId=1";
 			Query q=this.entityManager.createQuery(sql);
 			q.setParameter("date1", DateUtil.atStartOfDay(new Date()));
 			q.setParameter("date2", DateUtil.atEndOfDay(new Date()));
@@ -39,7 +39,7 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 	public Double getTotalMonthlyIncome() {
 		String sql=null;
 		try {
-			sql=" SELECT sum(t.txTransTotal) from Transaction t where t.txDate between :date1 and :date2";
+			sql=" SELECT sum(t.txTransTotal) from Transaction t where t.txDate >= :date1 and t.txDate <= :date2 and t.transactionCategory.tcId=1";
 			Query q=this.entityManager.createQuery(sql);
 			q.setParameter("date1", DateUtil.startOfMonth() );
 			q.setParameter("date2", DateUtil.endOfMonth());
@@ -56,7 +56,7 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 	public List<Transaction> getDailyTransactions() {
 		String sql=null;
 		try {
-			sql=" SELECT t from Transaction t where t.txDate between :date1 and :date2 order by t.txDate desc";
+			sql=" SELECT t from Transaction t where t.txDate >= :date1 and t.txDate <= :date2 and t.transactionCategory.tcId=1 order by t.txDate desc ";
 			Query q=this.entityManager.createQuery(sql);
 			q.setParameter("date1", DateUtil.atStartOfDay(new Date()));
 			q.setParameter("date2", DateUtil.atEndOfDay(new Date()));
@@ -72,7 +72,7 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 	public List<Transaction> getDailyTransactionsDateRange(Date start, Date end) {
 		String sql=null;
 		try {
-			sql=" SELECT t from Transaction t where t.txDate >= :date1 and t.txDate <= :date2 order by t.txDate desc";
+			sql=" SELECT t from Transaction t where t.txDate >= :date1 and t.txDate <= :date2 and t.transactionCategory.tcId=1 order by t.txDate desc ";
 			Query q=this.entityManager.createQuery(sql);
 			q.setParameter("date1", DateUtil.atStartOfDay(start));
 			q.setParameter("date2", DateUtil.atEndOfDay(end));
@@ -88,7 +88,7 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 	public Double getTotalIncomeByRange(Date start, Date end) {
 		String sql=null;
 		try {
-			sql=" SELECT sum(t.txTransTotal) from Transaction t where t.txDate >= :date1 and t.txDate <= :date2";
+			sql=" SELECT sum(t.txTransTotal) from Transaction t where t.txDate >= :date1 and t.txDate <= :date2 and t.transactionCategory.tcId=1";
 			Query q=this.entityManager.createQuery(sql);
 			q.setParameter("date1", DateUtil.atStartOfDay(start) );
 			q.setParameter("date2", DateUtil.atEndOfDay(end));
@@ -107,7 +107,7 @@ public class TransactionSummaryRepositoryImplementation implements TransactionSu
 			sql=" SELECT new com.wecode.medsoft.contracts.medicalservices.MedicalServiceCount(s.svName, count(s.svName))"
 					+ " from TransactionDetail td JOIN td.transaction t JOIN td.service s "
 					+ " where t.txDate >= :date1 and "
-					+ " t.txDate <= :date2 group by s.svName ";
+					+ " t.txDate <= :date2 and t.transactionCategory.tcId=1 group by s.svName ";
 			Query q=this.entityManager.createQuery(sql);
 			q.setParameter("date1", DateUtil.atStartOfDay(start));
 			q.setParameter("date2", DateUtil.atEndOfDay(end));

@@ -1,6 +1,7 @@
 package com.wecode.medsoft.entities;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -51,6 +52,9 @@ public class Transaction implements Serializable {
 
 	@Column(name="tx_trans_total")
 	private Double txTransTotal;
+	
+	@Column(name="tx_sale_comission")
+	private Double txSaleComission;
 
 	//bi-directional many-to-one association to PaymentType
 	@ManyToOne
@@ -66,6 +70,8 @@ public class Transaction implements Serializable {
 	@JoinColumn(name="tx_tc_id")
 	private TransactionCategory transactionCategory;
 	
+	
+	
 	//bi-directional many-to-one association to PaymentDetail
 	@OneToMany(mappedBy="transaction")
 	private List<PaymentDetail> paymentDetails;
@@ -74,6 +80,11 @@ public class Transaction implements Serializable {
 	@JoinColumn(name="tx_pnt_id")
 	private Patient patient;
 
+	
+	//bi-directional many-to-one association to TransactionDetailSale
+	@OneToMany(mappedBy="transaction")
+	private List<TransactionDetailSale> transactionDetailSales;
+	
 	public Transaction() {
 	}
 
@@ -208,6 +219,36 @@ public class Transaction implements Serializable {
 
 	public void setPatient(Patient patient) {
 		this.patient = patient;
+	}
+	
+	public List<TransactionDetailSale> getTransactionDetailSales() {
+		return this.transactionDetailSales;
+	}
+
+	public void setTransactionDetailSales(List<TransactionDetailSale> transactionDetailSales) {
+		this.transactionDetailSales = transactionDetailSales;
+	}
+
+	public TransactionDetailSale addTransactionDetailSale(TransactionDetailSale transactionDetailSale) {
+		getTransactionDetailSales().add(transactionDetailSale);
+		transactionDetailSale.setTransaction(this);
+
+		return transactionDetailSale;
+	}
+
+	public TransactionDetailSale removeTransactionDetailSale(TransactionDetailSale transactionDetailSale) {
+		getTransactionDetailSales().remove(transactionDetailSale);
+		transactionDetailSale.setTransaction(null);
+
+		return transactionDetailSale;
+	}
+
+	public Double getTxSaleComission() {
+		return txSaleComission;
+	}
+
+	public void setTxSaleComission(Double txSaleComission) {
+		this.txSaleComission = txSaleComission;
 	}
 
 }

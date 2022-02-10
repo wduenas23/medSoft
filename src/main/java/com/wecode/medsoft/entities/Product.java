@@ -3,6 +3,7 @@ package com.wecode.medsoft.entities;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -44,6 +45,9 @@ public class Product implements Serializable {
 	@Column(name="prd_name")
 	private String prdName;
 
+	@Column(name="prd_lot")
+	private String prdLot;
+	
 	@Column(name="prd_promotion_price")
 	private Double prdPromotionPrice;
 
@@ -59,6 +63,10 @@ public class Product implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="prd_ft_id")
 	private ProductFactory productFactory;
+	
+	//bi-directional many-to-one association to TransactionDetailSale
+	@OneToMany(mappedBy="product")
+	private List<TransactionDetailSale> transactionDetailSales;
 
 	public Product() {
 	}
@@ -166,6 +174,36 @@ public class Product implements Serializable {
 
 	public void setProductFactory(ProductFactory productFactory) {
 		this.productFactory = productFactory;
+	}
+
+	public String getPrdLot() {
+		return prdLot;
+	}
+
+	public void setPrdLot(String prdLot) {
+		this.prdLot = prdLot;
+	}
+	
+	public List<TransactionDetailSale> getTransactionDetailSales() {
+		return this.transactionDetailSales;
+	}
+
+	public void setTransactionDetailSales(List<TransactionDetailSale> transactionDetailSales) {
+		this.transactionDetailSales = transactionDetailSales;
+	}
+
+	public TransactionDetailSale addTransactionDetailSale(TransactionDetailSale transactionDetailSale) {
+		getTransactionDetailSales().add(transactionDetailSale);
+		transactionDetailSale.setProduct(this);
+
+		return transactionDetailSale;
+	}
+
+	public TransactionDetailSale removeTransactionDetailSale(TransactionDetailSale transactionDetailSale) {
+		getTransactionDetailSales().remove(transactionDetailSale);
+		transactionDetailSale.setProduct(null);
+
+		return transactionDetailSale;
 	}
 
 }
