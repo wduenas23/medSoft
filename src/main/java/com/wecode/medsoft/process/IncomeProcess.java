@@ -180,6 +180,7 @@ public class IncomeProcess {
 					income.setCode("200");
 					income.setMessage("SUCCESSFULL");
 					income.setTxId(transaction.getTxId());
+					income.setTxSubTotal(transaction.getTxTransSubtotal());
 					income.setTxTotal(transaction.getTxTransTotal());
 					
 					income.setPaymentType(transaction.getPaymentType().getPtName());
@@ -241,7 +242,7 @@ public class IncomeProcess {
 					income.setMessage("SUCCESSFULL");
 					income.setTxId(transaction.getTxId());
 					income.setTxTotal(transaction.getTxTransTotal());
-					
+					income.setTxSubTotal(transaction.getTxTransSubtotal());
 					income.setPaymentType(transaction.getPaymentType().getPtName());
 					income.setSubTotalClient(transaction.getTxTransClientTotal());
 					income.setDate(transaction.getTxDate());
@@ -313,7 +314,9 @@ public class IncomeProcess {
 				income.setSubTotalClient(transaction.get().getTxTransClientTotal());
 				income.setTxId(transaction.get().getTxId());
 				income.setTxTotal(transaction.get().getTxTransTotal());
+				income.setTxSubTotal(transaction.get().getTxTransSubtotal());
 				income.setDiscount(transaction.get().getTxDiscountPercentage());
+				income.setDiscountTotal(transaction.get().getTxTransDiscount());
 				for (TransactionDetail transactionDetail : transaction.get().getTransactionDetails()) {
 					service=new MedicalServiceResponse();
 					service.setCategory(transactionDetail.getService().getServicesCategory().getScId());

@@ -13,12 +13,14 @@ public class ResponseIncome {
     
     private String message;
     private String code;
+    private Double txSubTotal;
     private Double subTotalClient;
     private Double txTotal;
     private String paymentType;
     private Integer paymentId;
     private Integer txId;
     private Double discount;
+    private Double discountTotal;
     private Double comission;
     private List<MedicalServiceResponse> services;
     private List<PaymentDetails> paymentDetails;

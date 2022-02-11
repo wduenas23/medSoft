@@ -148,3 +148,8 @@ ALTER TABLE medsoft.transaction_detail_sales ADD CONSTRAINT transaction_detail_s
 ALTER TABLE medsoft.transaction_detail_sales ADD CONSTRAINT transaction_detail_sales_tx_id_fkey FOREIGN KEY (txds_td_id) REFERENCES medsoft."transaction"(tx_id);
 
 ALTER TABLE medsoft."transaction" ADD tx_sale_comission numeric NULL;
+
+
+
+-- Tercera entrega
+

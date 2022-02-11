@@ -114,4 +114,29 @@ public class PatientProcess {
 			return new ResponseEntity<>(patientInfo,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	public ResponseEntity<PatientInfo> getPatientByPhoneNumber(String phoneNumber) {
+		PatientInfo patientInfo=null;
+		try {
+			List<Patient> patient=patientRepository.findPatientByPhoneNumber(phoneNumber);
+			if(patient!=null && patient.size()>0 ) {
+				patientInfo=new PatientInfo();
+				patientInfo.setAddress(patient.get(0).getPatientContact().getPcAddress());
+				patientInfo.setBirthday(patient.get(0).getPtBirthday()!=null?patient.get(0).getPtBirthday().toString():"");
+				patientInfo.setIdentification(patient.get(0).getPtIdentification());
+				patientInfo.setLastName(patient.get(0).getPtLastName());
+				patientInfo.setName(patient.get(0).getPtName());
+				patientInfo.setPhone(patient.get(0).getPatientContact().getPcPhoneNumber());
+				patientInfo.setId(patient.get(0).getPtId());
+				
+				return new ResponseEntity<>(patientInfo,HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>(patientInfo,HttpStatus.NOT_FOUND);
+			}
+			
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return new ResponseEntity<>(patientInfo,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

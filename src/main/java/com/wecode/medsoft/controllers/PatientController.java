@@ -29,4 +29,10 @@ public class PatientController {
 		return patientProcess.getPatientById(id);
 	}
 	
+	@GetMapping("/byPhoneNumber")
+    @CrossOrigin
+	public ResponseEntity<PatientInfo> getPatientByPhoneNumber(@RequestParam String phoneNumber) {
+		return patientProcess.getPatientByPhoneNumber(phoneNumber);
+	}
+	
 }
