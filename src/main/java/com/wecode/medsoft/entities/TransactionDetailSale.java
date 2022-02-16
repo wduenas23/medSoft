@@ -1,8 +1,16 @@
 package com.wecode.medsoft.entities;
 
 import java.io.Serializable;
-import javax.persistence.*;
-import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 
 /**
@@ -19,10 +27,6 @@ public class TransactionDetailSale implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="txds_id")
 	private Integer txdsId;
-
-	@Temporal(TemporalType.DATE)
-	@Column(name="txds_created_date")
-	private Date txdsCreatedDate;
 
 	//bi-directional many-to-one association to Product
 	@ManyToOne
@@ -43,14 +47,6 @@ public class TransactionDetailSale implements Serializable {
 
 	public void setTxdsId(Integer txdsId) {
 		this.txdsId = txdsId;
-	}
-
-	public Date getTxdsCreatedDate() {
-		return this.txdsCreatedDate;
-	}
-
-	public void setTxdsCreatedDate(Date txdsCreatedDate) {
-		this.txdsCreatedDate = txdsCreatedDate;
 	}
 
 	public Product getProduct() {

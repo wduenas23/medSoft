@@ -20,14 +20,19 @@ import com.wecode.medsoft.contracts.incomes.ResponseIncome;
 import com.wecode.medsoft.contracts.incomes.Totals;
 import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
 import com.wecode.medsoft.contracts.patient.PatientInfo;
+import com.wecode.medsoft.contracts.product.ProductPojo;
 import com.wecode.medsoft.entities.Patient;
 import com.wecode.medsoft.entities.PaymentDetail;
 import com.wecode.medsoft.entities.PaymentType;
+import com.wecode.medsoft.entities.Product;
 import com.wecode.medsoft.entities.Transaction;
 import com.wecode.medsoft.entities.TransactionCategory;
 import com.wecode.medsoft.entities.TransactionDetail;
+import com.wecode.medsoft.entities.TransactionDetailSale;
 import com.wecode.medsoft.persistence.PaymentDetailRepository;
+import com.wecode.medsoft.persistence.TransactionCategoryRepository;
 import com.wecode.medsoft.persistence.TransactionDetailRepository;
+import com.wecode.medsoft.persistence.TransactionDetailSaleRepository;
 import com.wecode.medsoft.persistence.TransactionRepository;
 import com.wecode.medsoft.persistence.TransactionSummaryRepositoryImplementation;
 
@@ -40,17 +45,22 @@ public class IncomeProcess {
 	
 	private TransactionRepository tranRepository;
 	private TransactionDetailRepository detailRepository;
+	private TransactionDetailSaleRepository detailSaleRepository;
 	private TransactionSummaryRepositoryImplementation summaryRepository;
+	private TransactionCategoryRepository transactionCategoryRepository;
 	private PaymentDetailRepository paymentDetailRepository;
 	private PatientProcess patientProcess;
+	private final static String SERVICES="INGRESOS POR SERVICIOS MEDICOS";
+	private final static String SALES="INGRESOS POR VENTAS";
 	
-	
-	IncomeProcess(TransactionRepository tranRepository,TransactionDetailRepository detailRepository,TransactionSummaryRepositoryImplementation summaryRepository,PaymentDetailRepository paymentDetailRepository,PatientProcess patientProcess){
+	IncomeProcess(TransactionRepository tranRepository,TransactionDetailRepository detailRepository,TransactionSummaryRepositoryImplementation summaryRepository,PaymentDetailRepository paymentDetailRepository,PatientProcess patientProcess,TransactionCategoryRepository transactionCategoryRepository,TransactionDetailSaleRepository detailSaleRepository){
 		this.tranRepository=tranRepository;
 		this.detailRepository=detailRepository;
 		this.summaryRepository=summaryRepository;
 		this.paymentDetailRepository=paymentDetailRepository;
 		this.patientProcess=patientProcess;
+		this.transactionCategoryRepository=transactionCategoryRepository;
+		this.detailSaleRepository=detailSaleRepository;
 	
 	}
 	
@@ -65,7 +75,7 @@ public class IncomeProcess {
 			log.info("Request Income: {}",mapper.writeValueAsString(requestIncome));
 			
 			
-			transaction=buildTransaction(requestIncome);
+			transaction=buildTransaction(requestIncome,SERVICES);
 			Patient patient=patientProcess.createPatient(requestIncome);
 			transaction.setPatient(patient);
 			Transaction newTransaction=tranRepository.save(transaction);
@@ -107,6 +117,64 @@ public class IncomeProcess {
 		return responseIncome;
 	}
 	
+	@Transactional
+	public ResponseIncome saveIncomeSales(RequestIncome requestIncome) {
+		Transaction transaction=null;
+		TransactionDetailSale tranDetailSale=new TransactionDetailSale();
+		PaymentDetail payDetail=null;
+		ResponseIncome responseIncome=new ResponseIncome();
+		try {
+			ObjectMapper mapper=new ObjectMapper();
+			log.info("Request Income: {}",mapper.writeValueAsString(requestIncome));
+			
+			
+			transaction=buildTransaction(requestIncome,SALES);
+			Patient patient=patientProcess.createPatient(requestIncome);
+			transaction.setPatient(patient);
+			Transaction newTransaction=tranRepository.save(transaction);
+			
+			//deleting tx Details Sale
+			List<TransactionDetailSale> trxDetail=detailSaleRepository.findByTransaction(newTransaction);
+			if(trxDetail!=null && !trxDetail.isEmpty()) {
+				for (TransactionDetailSale transactionDetailSale : trxDetail) {
+					detailSaleRepository.delete(transactionDetailSale);
+				}
+			}
+			
+			requestIncome.getProducts();
+			for(ProductPojo prod: requestIncome.getProducts()) {
+				tranDetailSale=builTransactionDetailSale(newTransaction, prod);
+				detailSaleRepository.save(tranDetailSale);
+			}
+			
+			
+			//deleting payment type
+			List<PaymentDetail> paymentDetails= paymentDetailRepository.findByTransaction(newTransaction);
+			if(paymentDetails!=null && !paymentDetails.isEmpty()) {
+				for (PaymentDetail paymentDetail : paymentDetails) {
+					paymentDetailRepository.delete(paymentDetail);
+				}
+			}
+			
+			for(PaymentDetails pd: requestIncome.getPaymentDetails()) {
+				payDetail=buildPaymentDetail(newTransaction,pd);
+				paymentDetailRepository.save(payDetail);
+			}
+			
+			//Descargar inventario
+			
+			responseIncome.setCode("200");
+			responseIncome.setMessage("SUCCESSFULL");
+		} catch (Exception e) {
+			responseIncome.setCode("500");
+			responseIncome.setMessage("ERROR " +e.getMessage() );
+			log.error(e.getMessage());
+		}
+		return responseIncome;
+	}
+	
+	
+
 	private PaymentDetail buildPaymentDetail(Transaction newTransaction, PaymentDetails pd) {
 		PaymentDetail pdetail=new PaymentDetail();
 		PaymentType pt=new PaymentType();
@@ -117,19 +185,21 @@ public class IncomeProcess {
 		return pdetail;
 	}
 
-	public Transaction buildTransaction(RequestIncome requestIncome) throws Exception {
+	public Transaction buildTransaction(RequestIncome requestIncome,String type) throws Exception {
 		Transaction transaction=new Transaction();
 		try {
-			
 			PaymentType pt=new PaymentType();
 			pt.setPtId(requestIncome.getFormOfPayment().getId());
 			transaction.setPaymentType(pt);
-			
-			TransactionCategory tc=new TransactionCategory();
-			tc.setTcId(1);
-			transaction.setTransactionCategory(tc);
+			List<TransactionCategory> tcList=transactionCategoryRepository.findByTcName(type);
+			transaction.setTransactionCategory(tcList.get(0));
 			transaction.setTxDate(new Timestamp(requestIncome.getTxDate().getTime()));
-			transaction.setTxTransSubtotal(requestIncome.getServices().stream().mapToDouble(o -> o.getCost()).sum());
+			if(type.equals(SERVICES)) {
+				transaction.setTxTransSubtotal(requestIncome.getServices().stream().mapToDouble(o -> o.getCost()).sum());
+			}else {
+				transaction.setTxTransSubtotal(requestIncome.getProducts().stream().mapToDouble(o -> o.getSellingPrice()).sum());
+			}
+			
 			transaction.setTxTransDiscount(getTotal("Descuentos",requestIncome.getTotals()));
 			transaction.setTxDiscountPercentage(requestIncome.getDiscount());
 			transaction.setTxTransClientTotal(getTotal("Sub Total Cliente", requestIncome.getTotals()));
@@ -138,8 +208,6 @@ public class IncomeProcess {
 			if(requestIncome.getId()!=null) {
 				transaction.setTxId(requestIncome.getId());
 			}
-			ObjectMapper mapper=new ObjectMapper();
-			log.info("Objecto Transaction: {}",mapper.writeValueAsString(transaction));
 			return transaction;
 		} catch (Exception e) {
 			throw e;
@@ -161,6 +229,21 @@ public class IncomeProcess {
 			service.setSvId(medicalService.getId());
 			tdetail.setService(service);
 			return tdetail;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	private TransactionDetailSale builTransactionDetailSale(Transaction trx, ProductPojo prod) {
+		TransactionDetailSale tdetailSale=null;
+		Product prd=null;
+		try {
+			tdetailSale=new TransactionDetailSale();
+			tdetailSale.setTransaction(trx);
+			prd=new Product();
+			prd.setPrdId(prod.getId());
+			tdetailSale.setProduct(prd);
+			return tdetailSale;
 		} catch (Exception e) {
 			throw e;
 		}

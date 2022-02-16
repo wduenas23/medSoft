@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
 import com.wecode.medsoft.contracts.patient.PatientInfo;
+import com.wecode.medsoft.contracts.product.ProductPojo;
 
 import lombok.Data;
 
@@ -23,6 +24,7 @@ public class ResponseIncome {
     private Double discountTotal;
     private Double comission;
     private List<MedicalServiceResponse> services;
+    private List<ProductPojo> products;
     private List<PaymentDetails> paymentDetails;
     private PatientInfo patient;
     private Date date;

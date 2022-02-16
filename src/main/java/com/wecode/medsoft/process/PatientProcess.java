@@ -47,14 +47,19 @@ public class PatientProcess {
 				return patients.get(0);
 			}	*/	
 			
-			List<Patient> patients=patientRepository.findByPtName(requestIncome.getPatient().getName());
+			List<Patient> patients=patientRepository.findPatientByPhoneNumber(requestIncome.getPatient().getPhone());
+			if(patients!=null && patients.size()>0 ) {
+				return patients.get(0);
+			}
+			
+			/*List<Patient> patients=patientRepository.findByPtNameIgnoreCase(requestIncome.getPatient().getName());
 			if(patients!=null && patients.size()>0) {
 				for (Patient pat : patients) {
-					if(pat.getPtLastName().equals(requestIncome.getPatient().getLastName())) {
+					if(pat.getPtLastName().equalsIgnoreCase(requestIncome.getPatient().getLastName())) {
 						return pat;
 					}
 				}
-			}
+			}*/
 			
 			patient=new Patient();
 			SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");

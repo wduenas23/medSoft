@@ -30,8 +30,14 @@ public class IngresosController {
 	
     @PostMapping("/save")
     @CrossOrigin
-    public ResponseEntity<ResponseIncome> testMethod(@RequestBody RequestIncome income){
+    public ResponseEntity<ResponseIncome> save(@RequestBody RequestIncome income){
     	return new ResponseEntity<>(incomeProcess.saveIncome(income),HttpStatus.OK);
+    }
+    
+    @PostMapping("/saveSale")
+    @CrossOrigin
+    public ResponseEntity<ResponseIncome> saveSale(@RequestBody RequestIncome income){
+    	return new ResponseEntity<>(incomeProcess.saveIncomeSales(income),HttpStatus.OK);
     }
     
     @GetMapping("/dailyIncomes")

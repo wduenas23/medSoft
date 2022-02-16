@@ -6,6 +6,7 @@ import java.util.List;
 import com.wecode.medsoft.contracts.formofpayments.FormOfPaymentResponse;
 import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
 import com.wecode.medsoft.contracts.patient.PatientInfo;
+import com.wecode.medsoft.contracts.product.ProductPojo;
 
 import lombok.Data;
 
@@ -13,6 +14,7 @@ import lombok.Data;
 public class RequestIncome {
  
 	private List<MedicalServiceResponse> services;
+	private List<ProductPojo> products;
     private FormOfPaymentResponse formOfPayment;
     private List<Totals> totals;
     private Date txDate;
