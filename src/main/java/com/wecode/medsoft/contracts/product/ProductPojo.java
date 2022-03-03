@@ -22,6 +22,6 @@ public class ProductPojo {
 	private Integer drogueriaId;
 	private String drogueriaName;
 	private String prdLot;
-	
+	private String user;
 	
 }

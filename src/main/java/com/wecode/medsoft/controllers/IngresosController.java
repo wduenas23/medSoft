@@ -34,6 +34,12 @@ public class IngresosController {
     	return new ResponseEntity<>(incomeProcess.saveIncome(income),HttpStatus.OK);
     }
     
+    @GetMapping("/delete")
+    @CrossOrigin
+    public ResponseEntity<Boolean> delete(@RequestParam Integer id){
+    	return incomeProcess.deleteIncome(id);
+    }
+    
     @PostMapping("/saveSale")
     @CrossOrigin
     public ResponseEntity<ResponseIncome> saveSale(@RequestBody RequestIncome income){
@@ -42,14 +48,14 @@ public class IngresosController {
     
     @GetMapping("/dailyIncomes")
     @CrossOrigin
-    public ResponseEntity<List<ResponseIncome>> getDailyIncomes(){
-    	return incomeProcess.getDailyIncomes();
+    public ResponseEntity<List<ResponseIncome>> getDailyIncomes(@RequestParam Integer type){
+    	return incomeProcess.getDailyIncomes(type);
     }
     
     @GetMapping("/dailyIncomesByRange")
     @CrossOrigin
-    public ResponseEntity<List<ResponseIncome>> getDailyIncomesByRange(@RequestParam Date start,@RequestParam Date end){
-    	return incomeProcess.getDailyIncomesDateRange(start,end);
+    public ResponseEntity<List<ResponseIncome>> getDailyIncomesByRange(@RequestParam Date start,@RequestParam Date end,@RequestParam Integer type){
+    	return incomeProcess.getDailyIncomesDateRange(start,end,type);
     }
     
     @GetMapping("/byId")

@@ -28,5 +28,6 @@ public class ResponseIncome {
     private List<PaymentDetails> paymentDetails;
     private PatientInfo patient;
     private Date date;
+    private Double saleComission;
     
 }

@@ -18,7 +18,7 @@ public interface MedicalServicesRepository extends CrudRepository<Service,Intege
 	@Query("SELECT new com.wecode.medsoft.contracts.medicalservices.MedicalServiceCount(s.svName, count(s.svName))"
 			+ "					 from TransactionDetail td JOIN td.transaction t JOIN td.service s "
 			+ "					 where t.txDate >= ?1 and "
-			+ "					t.txDate <= ?2 group by s.svName ")
+			+ "					t.txDate <= ?2 and t.txDeleteFlag is null group by s.svName ")
 	public List<MedicalServiceCount> getServiceCountByRange(Date start,Date end);
 	
 	

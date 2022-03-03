@@ -13,12 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wecode.medsoft.contracts.incomes.IncomeDetails;
 import com.wecode.medsoft.contracts.incomes.PaymentDetails;
 import com.wecode.medsoft.contracts.incomes.RequestIncome;
 import com.wecode.medsoft.contracts.incomes.ResponseIncome;
 import com.wecode.medsoft.contracts.incomes.Totals;
 import com.wecode.medsoft.contracts.medicalservices.MedicalServiceResponse;
+import com.wecode.medsoft.contracts.parameter.ParameterPojo;
 import com.wecode.medsoft.contracts.patient.PatientInfo;
 import com.wecode.medsoft.contracts.product.ProductPojo;
 import com.wecode.medsoft.entities.Patient;
@@ -30,6 +30,7 @@ import com.wecode.medsoft.entities.TransactionCategory;
 import com.wecode.medsoft.entities.TransactionDetail;
 import com.wecode.medsoft.entities.TransactionDetailSale;
 import com.wecode.medsoft.persistence.PaymentDetailRepository;
+import com.wecode.medsoft.persistence.ProductRepository;
 import com.wecode.medsoft.persistence.TransactionCategoryRepository;
 import com.wecode.medsoft.persistence.TransactionDetailRepository;
 import com.wecode.medsoft.persistence.TransactionDetailSaleRepository;
@@ -50,10 +51,12 @@ public class IncomeProcess {
 	private TransactionCategoryRepository transactionCategoryRepository;
 	private PaymentDetailRepository paymentDetailRepository;
 	private PatientProcess patientProcess;
+	private ParameterProcess parameterProcess;
+	private ProductRepository productRepository;
 	private final static String SERVICES="INGRESOS POR SERVICIOS MEDICOS";
 	private final static String SALES="INGRESOS POR VENTAS";
 	
-	IncomeProcess(TransactionRepository tranRepository,TransactionDetailRepository detailRepository,TransactionSummaryRepositoryImplementation summaryRepository,PaymentDetailRepository paymentDetailRepository,PatientProcess patientProcess,TransactionCategoryRepository transactionCategoryRepository,TransactionDetailSaleRepository detailSaleRepository){
+	IncomeProcess(TransactionRepository tranRepository,TransactionDetailRepository detailRepository,TransactionSummaryRepositoryImplementation summaryRepository,PaymentDetailRepository paymentDetailRepository,PatientProcess patientProcess,TransactionCategoryRepository transactionCategoryRepository,TransactionDetailSaleRepository detailSaleRepository,ParameterProcess parameterProcess,ProductRepository productRepository){
 		this.tranRepository=tranRepository;
 		this.detailRepository=detailRepository;
 		this.summaryRepository=summaryRepository;
@@ -61,6 +64,8 @@ public class IncomeProcess {
 		this.patientProcess=patientProcess;
 		this.transactionCategoryRepository=transactionCategoryRepository;
 		this.detailSaleRepository=detailSaleRepository;
+		this.parameterProcess=parameterProcess;
+		this.productRepository=productRepository;
 	
 	}
 	
@@ -129,6 +134,7 @@ public class IncomeProcess {
 			
 			
 			transaction=buildTransaction(requestIncome,SALES);
+			transaction.setTxSaleComission(calculateComission(transaction.getTxTransTotal()));
 			Patient patient=patientProcess.createPatient(requestIncome);
 			transaction.setPatient(patient);
 			Transaction newTransaction=tranRepository.save(transaction);
@@ -144,7 +150,9 @@ public class IncomeProcess {
 			requestIncome.getProducts();
 			for(ProductPojo prod: requestIncome.getProducts()) {
 				tranDetailSale=builTransactionDetailSale(newTransaction, prod);
-				detailSaleRepository.save(tranDetailSale);
+				TransactionDetailSale tds=detailSaleRepository.save(tranDetailSale);
+				//Descargar inventario
+				updateInventory(tds);
 			}
 			
 			
@@ -161,7 +169,8 @@ public class IncomeProcess {
 				paymentDetailRepository.save(payDetail);
 			}
 			
-			//Descargar inventario
+			
+			
 			
 			responseIncome.setCode("200");
 			responseIncome.setMessage("SUCCESSFULL");
@@ -174,6 +183,46 @@ public class IncomeProcess {
 	}
 	
 	
+	@Transactional
+	private void updateInventory(TransactionDetailSale tds) {
+		try {
+			Optional<Product> product=productRepository.findById(tds.getProduct().getPrdId());
+			if(product.isPresent()) {
+				
+				product.get().setPrdInventory(product.get().getPrdInventory()-1);
+				productRepository.save(product.get());
+			}
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+	
+	@Transactional
+	private void updateInventoryForAnnulment(TransactionDetailSale tds) {
+		try {
+			Optional<Product> product=productRepository.findById(tds.getProduct().getPrdId());
+			if(product.isPresent()) {
+				
+				product.get().setPrdInventory(product.get().getPrdInventory()+1);
+				productRepository.save(product.get());
+			}
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
+
+	private Double calculateComission(Double txTotal) {
+		try {
+			ResponseEntity<ParameterPojo> response=parameterProcess.getById("COMISION");
+			ParameterPojo param=response.getBody();
+			return txTotal*Double.parseDouble(param.getPmtValue());
+		} catch (Exception e) {
+			throw e;
+		}
+		
+	}
 
 	private PaymentDetail buildPaymentDetail(Transaction newTransaction, PaymentDetails pd) {
 		PaymentDetail pdetail=new PaymentDetail();
@@ -183,6 +232,24 @@ public class IncomeProcess {
 		pdetail.setPdAmount(pd.getAmount());
 		pdetail.setTransaction(newTransaction);
 		return pdetail;
+	}
+	
+	@Transactional
+	public ResponseEntity<Boolean> deleteIncome(Integer id){
+		try {
+			int updated=summaryRepository.deleteTransaction(id);
+			if(updated>0) {
+				Optional<Transaction> t=tranRepository.findById(id);
+				if(t.isPresent()) {
+					for (TransactionDetailSale td : t.get().getTransactionDetailSales()) {
+						updateInventoryForAnnulment(td);
+					}
+				}
+			}
+			return new ResponseEntity<>(updated>0,HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(false,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	public Transaction buildTransaction(RequestIncome requestIncome,String type) throws Exception {
@@ -198,12 +265,13 @@ public class IncomeProcess {
 				transaction.setTxTransSubtotal(requestIncome.getServices().stream().mapToDouble(o -> o.getCost()).sum());
 			}else {
 				transaction.setTxTransSubtotal(requestIncome.getProducts().stream().mapToDouble(o -> o.getSellingPrice()).sum());
+				
 			}
-			
+			transaction.setTxLoginUser(requestIncome.getUser());
 			transaction.setTxTransDiscount(getTotal("Descuentos",requestIncome.getTotals()));
 			transaction.setTxDiscountPercentage(requestIncome.getDiscount());
 			transaction.setTxTransClientTotal(getTotal("Sub Total Cliente", requestIncome.getTotals()));
-			transaction.setTxTransFee(getTotal("Comisiones",requestIncome.getTotals()));
+			transaction.setTxTransFee(getTotal("Comision por Tarjeta",requestIncome.getTotals()));
 			transaction.setTxTransTotal(getTotal("Total",requestIncome.getTotals()));
 			if(requestIncome.getId()!=null) {
 				transaction.setTxId(requestIncome.getId());
@@ -249,12 +317,12 @@ public class IncomeProcess {
 		}
 	}
 	
-	public ResponseEntity<List<ResponseIncome>> getDailyIncomes(){
+	public ResponseEntity<List<ResponseIncome>> getDailyIncomes(Integer type){
 		try {
 			ResponseIncome responseIncome=new ResponseIncome();
 			List<ResponseIncome> incomes=new ArrayList<>();
 			ResponseIncome income=null;
-			List<Transaction> transactions=(List<Transaction>)summaryRepository.getDailyTransactions();
+			List<Transaction> transactions=(List<Transaction>)summaryRepository.getDailyTransactions(type);
 			if(transactions!=null && transactions.size()>0) {
 				responseIncome.setCode("200");
 				responseIncome.setMessage("SUCCESSFULL");
@@ -309,13 +377,13 @@ public class IncomeProcess {
 		}
 	}
 	
-	public ResponseEntity<List<ResponseIncome>> getDailyIncomesDateRange(Date start, Date end){
+	public ResponseEntity<List<ResponseIncome>> getDailyIncomesDateRange(Date start, Date end,Integer type){
 		try {
 			ResponseIncome responseIncome=new ResponseIncome();
 			List<ResponseIncome> incomes=new ArrayList<>();
 			ResponseIncome income=null;
 			List<Transaction> transactions=null;
-			transactions=(List<Transaction>)summaryRepository.getDailyTransactionsDateRange(start,end);
+			transactions=(List<Transaction>)summaryRepository.getDailyTransactionsDateRange(start,end,type);
 			if(transactions!=null && transactions.size()>0) {
 				responseIncome.setCode("200");
 				responseIncome.setMessage("SUCCESSFULL");
@@ -328,6 +396,7 @@ public class IncomeProcess {
 					income.setTxSubTotal(transaction.getTxTransSubtotal());
 					income.setPaymentType(transaction.getPaymentType().getPtName());
 					income.setSubTotalClient(transaction.getTxTransClientTotal());
+					income.setSaleComission(transaction.getTxSaleComission());
 					income.setDate(transaction.getTxDate());
 					PatientInfo patient=new PatientInfo();
 					patient.setAddress(transaction.getPatient().getPatientContact().getPcAddress());
@@ -373,7 +442,6 @@ public class IncomeProcess {
 	public ResponseEntity<ResponseIncome> getTxById(Integer id){
 		try {
 			ResponseIncome income=null;
-			List<IncomeDetails> incomeDetails =new ArrayList<>();
 			List<MedicalServiceResponse> services=new ArrayList<>();
 			MedicalServiceResponse service=new MedicalServiceResponse();
 			Optional<Transaction> transaction=tranRepository.findById(id);
@@ -412,6 +480,7 @@ public class IncomeProcess {
 				}
 				income.setServices(services);
 				
+				income.setProducts(buildProducts(transaction.get().getTransactionDetailSales()));				
 				List<PaymentDetail> payments=transaction.get().getPaymentDetails();
 				List<PaymentDetails> pdetails=new ArrayList();
 				PaymentDetails pdetail=null;
@@ -435,5 +504,23 @@ public class IncomeProcess {
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+
+	private List<ProductPojo> buildProducts(List<TransactionDetailSale> transactionDetailSales) {
+		List<ProductPojo> prds=new ArrayList<>();
+		ProductPojo prd=null;
+		try {
+			if(transactionDetailSales!=null && transactionDetailSales.size()>0) {
+				for (TransactionDetailSale td : transactionDetailSales) {
+					prd=new ProductPojo();
+					prd.setName(td.getProduct().getPrdName());
+					prds.add(prd);
+				}
+			}
+			return prds;
+		} catch (Exception e) {
+			throw e;
+		}
+		
 	}
 }

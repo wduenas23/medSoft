@@ -8,4 +8,5 @@ public class SummaryTransaction {
 	private Double dailySummary;
 	private Double monthlySummary;
 	private Double rangeSummary;
+	private Double rangeComission;
 }

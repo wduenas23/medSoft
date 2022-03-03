@@ -10,8 +10,10 @@ public interface TransactionSummaryRepository {
 	
 	public Double getTotalDailyIncome();
 	public Double getTotalMonthlyIncome();
-	public List<Transaction> getDailyTransactions();
-	public List<Transaction> getDailyTransactionsDateRange(Date start, Date end);
-	public Double getTotalIncomeByRange(Date start, Date end);
+	public List<Transaction> getDailyTransactions(Integer type);
+	public List<Transaction> getDailyTransactionsDateRange(Date start, Date end,Integer type);
+	public Double getTotalIncomeByRange(Date start, Date end, Integer type);
+	public Double getTotalComissionByRange(Date start, Date end, Integer type);
 	public List<MedicalServiceCount> getServiceCount(Date start, Date end);
+	public int deleteTransaction(Integer id);
 }

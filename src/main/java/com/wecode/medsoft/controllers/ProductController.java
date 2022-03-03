@@ -38,6 +38,12 @@ public class ProductController {
 		return process.getAllProducts();
 	}
 	
+	@GetMapping("/allAvailable")
+    @CrossOrigin
+    public ResponseEntity<List<ProductPojo>> getAllAvailableProducts(){
+		return process.getAllAvailableProducts();
+	}
+	
 	@GetMapping("/byId")
     @CrossOrigin
     public ResponseEntity<ProductPojo> getProductById(@RequestParam Integer id){

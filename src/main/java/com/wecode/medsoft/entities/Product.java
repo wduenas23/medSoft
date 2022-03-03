@@ -48,6 +48,9 @@ public class Product implements Serializable {
 	@Column(name="prd_lot")
 	private String prdLot;
 	
+	@Column(name="prd_login_user")
+	private String prdLoginUser;  
+	
 	@Column(name="prd_promotion_price")
 	private Double prdPromotionPrice;
 
@@ -204,6 +207,14 @@ public class Product implements Serializable {
 		transactionDetailSale.setProduct(null);
 
 		return transactionDetailSale;
+	}
+
+	public String getPrdLoginUser() {
+		return prdLoginUser;
+	}
+
+	public void setPrdLoginUser(String prdLoginUser) {
+		this.prdLoginUser = prdLoginUser;
 	}
 
 }

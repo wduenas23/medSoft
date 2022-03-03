@@ -2,6 +2,7 @@ package com.wecode.medsoft.entities;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -54,7 +55,16 @@ public class Transaction implements Serializable {
 	
 	@Column(name="tx_sale_comission")
 	private Double txSaleComission;
-
+	
+	@Column(name="tx_delete_flag")
+	private Integer txDeleteFlag;
+	
+	@Column(name="tx_delete_date")
+	private Date txDeleteDate;
+	
+	@Column(name="tx_login_user")
+	private String txLoginUser; 
+	
 	//bi-directional many-to-one association to PaymentType
 	@ManyToOne
 	@JoinColumn(name="tx_pt_id")
@@ -248,6 +258,30 @@ public class Transaction implements Serializable {
 
 	public void setTxSaleComission(Double txSaleComission) {
 		this.txSaleComission = txSaleComission;
+	}
+
+	public Integer getTxDeleteFlag() {
+		return txDeleteFlag;
+	}
+
+	public void setTxDeleteFlag(Integer txDeleteFlag) {
+		this.txDeleteFlag = txDeleteFlag;
+	}
+
+	public Date getTxDeleteDate() {
+		return txDeleteDate;
+	}
+
+	public void setTxDeleteDate(Date txDeleteDate) {
+		this.txDeleteDate = txDeleteDate;
+	}
+
+	public String getTxLoginUser() {
+		return txLoginUser;
+	}
+
+	public void setTxLoginUser(String txLoginUser) {
+		this.txLoginUser = txLoginUser;
 	}
 
 }

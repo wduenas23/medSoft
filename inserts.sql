@@ -153,3 +153,85 @@ ALTER TABLE medsoft."transaction" ADD tx_sale_comission numeric NULL;
 
 -- Tercera entrega
 
+CREATE TABLE medsoft.parameters (
+	pmt_id varchar(50) primary key,
+	pmt_value varchar(50) NOT NULL,
+	pmt_context varchar(50) NOT NULL,
+	pmt_created_date date NOT NULL DEFAULT CURRENT_DATE
+);
+
+-- Auto-generated SQL script #202202222217
+INSERT INTO medsoft.parameters (pmt_id,pmt_value,pmt_context) VALUES ('COMISION','0.03','COMISION VENTAS');
+INSERT INTO medsoft.parameters (pmt_id,pmt_value,pmt_context) VALUES ('COMISION_TARJETA','0.07','COMISION PAGO TARJETA');
+INSERT INTO medsoft.parameters (pmt_id,pmt_value,pmt_context) VALUES ('HABILITAR_INVENTARIO','SI','HABILITAR INVENTARIO	');
+
+-- Auto-generated SQL script #202203012242
+INSERT INTO medsoft.authorizations (auth_name,auth_parent,auth_display_name,auth_icon,auth_order,auth_created_date,auth_parent_id,auth_link)
+	VALUES ('ADMON. PARAMETROS',false,'Admon. Parametros','edit',2.4,'2022-03-01',2,'./parametros');
+
+	-- Auto-generated SQL script #202203012243
+INSERT INTO medsoft.role_authorization (rauth_auth_id,rauth_role_id)
+	VALUES (13,2);
+-- Auto-generated SQL script #202203022151
+INSERT INTO medsoft.role_authorization (rauth_auth_id,rauth_role_id)
+	VALUES (8,2);
+-- Auto-generated SQL script #202203022152
+INSERT INTO medsoft.role_authorization (rauth_auth_id,rauth_role_id)
+	VALUES (5,3);
+	
+	
+
+ALTER TABLE medsoft.transaction ADD tx_delete_flag int NULL;
+ALTER TABLE medsoft.transaction ADD tx_delete_date date NULL;
+ALTER TABLE medsoft.transaction ADD tx_login_user varchar(25) NULL;
+
+ALTER TABLE medsoft.product ADD prd_login_user varchar(25) NULL;
+
+CREATE TABLE medsoft.product_audit (
+	prd_audit_id serial primary key,
+	prd_id int4 NULL,
+	prd_code varchar(50) NULL,
+	prd_pc_id int4 NULL,
+	prd_ft_id int4 NULL,
+	prd_name varchar(200) NULL,
+	prd_description varchar(200) NULL,
+	prd_inventory int4  NULL,
+	prd_inventory_new int4  NULL,
+	prd_expiration date NULL,
+	prd_expiration_new date NULL,
+	prd_image_url varchar(200) NULL,
+	prd_cost numeric NULL,
+	prd_cost_new numeric NULL,
+	prd_selling_price numeric NULL,
+	prd_selling_price_new numeric NULL,
+	prd_promotion_price numeric NULL,
+	prd_active bool NULL,
+	prd_created_date date  NULL DEFAULT CURRENT_DATE,
+	prd_lot varchar(50) NULL,
+	prd_audit_login_user varchar(25) null,
+	prd_audit_created_date date  NULL DEFAULT CURRENT_DATE
+);
+
+CREATE OR REPLACE FUNCTION product_audit()
+  RETURNS TRIGGER 
+  LANGUAGE PLPGSQL
+  AS
+$$
+BEGIN
+	
+	INSERT INTO medsoft.product_audit
+	(prd_id, prd_code, prd_pc_id, prd_ft_id, prd_name, prd_description, prd_inventory,prd_inventory_new, prd_expiration,prd_expiration_new, prd_image_url, 
+	prd_cost,prd_cost_new, prd_selling_price,prd_selling_price_new, prd_promotion_price, prd_active, prd_created_date, prd_lot, prd_audit_login_user, prd_audit_created_date)
+	VALUES(old.prd_id, old.prd_code ,old.prd_pc_id, old.prd_ft_id,old.prd_name,old.prd_description,old.prd_inventory,new.prd_inventory,old.prd_expiration,new.prd_expiration,old.prd_image_url,
+	old.prd_cost,new.prd_cost, old.prd_selling_price,new.prd_selling_price,old.prd_promotion_price, old.prd_active, old.prd_created_date, old.prd_lot, new.prd_login_user, CURRENT_DATE);
+
+	RETURN NEW;
+END;
+$$
+
+CREATE TRIGGER product_audit 
+  BEFORE UPDATE
+  ON  medsoft.product
+  FOR EACH ROW
+  EXECUTE PROCEDURE product_audit();
+

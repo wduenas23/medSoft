@@ -22,4 +22,6 @@ public class RequestIncome {
     private Integer id;
     private List<PaymentDetails> paymentDetails;
     private PatientInfo patient;
+    private Integer deleteFlag;
+    private String user;
 }

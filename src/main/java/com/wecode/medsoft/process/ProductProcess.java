@@ -52,6 +52,24 @@ public class ProductProcess {
 		}
 	}
 	
+	public ResponseEntity<List<ProductPojo>> getAllAvailableProducts(){
+		List<ProductPojo> productsPojo=new ArrayList<>();
+		ProductPojo prd=null;
+		try {
+			List<Product> products=(List<Product>)productRepository.getAllAvailableProdcts();
+			for (Product product : products) {
+				prd=new ProductPojo();
+				prd=buildNewPrdPojo(prd,product);
+				productsPojo.add(prd);
+			}
+			return new ResponseEntity<>(productsPojo,HttpStatus.OK);		
+		} catch (Exception e) {
+			log.error("Error getting all products",e.getMessage());
+			return new ResponseEntity<>(productsPojo,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
 	
 	public ResponseEntity<ProductPojo> getProductById(Integer id){
 		ProductPojo prd=null;
@@ -94,6 +112,7 @@ public class ProductProcess {
 			newPrd.setPrdPromotionPrice(newProduct.getPromotionPrice());
 			newPrd.setPrdExpiration(newProduct.getExpiDate());
 			newPrd.setPrdLot(newProduct.getPrdLot());
+			newPrd.setPrdLoginUser(newProduct.getUser());
 			newPrd=this.productRepository.save(newPrd);
 			prd=new ProductPojo();
 			prd=buildNewPrdPojo(prd,newPrd);

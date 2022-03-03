@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.wecode.medsoft.contracts.medicalservices.MedicalServiceCount;
+import com.wecode.medsoft.contracts.product.ProductCount;
 import com.wecode.medsoft.contracts.summary.SummaryTransaction;
 import com.wecode.medsoft.process.TransactionSummaryProcess;
 
@@ -34,14 +35,26 @@ public class TransactionSummaryController {
 	
 	@GetMapping("/range")
     @CrossOrigin
-    public ResponseEntity<SummaryTransaction> getRangeSummary(@RequestParam Date start,@RequestParam Date end){
-        return process.getSummaryTransactionByRange(start,end);
+    public ResponseEntity<SummaryTransaction> getRangeSummary(@RequestParam Date start,@RequestParam Date end,@RequestParam Integer type){
+        return process.getSummaryTransactionByRange(start,end, type);
+    }
+	
+	@GetMapping("/range/comission")
+    @CrossOrigin
+    public ResponseEntity<SummaryTransaction> getRangeComissionSummary(@RequestParam Date start,@RequestParam Date end,@RequestParam Integer type){
+        return process.getSummaryComissionTransactionByRange(start, end, type);
     }
 	
 	@GetMapping("/services/count/range")
     @CrossOrigin
     public ResponseEntity<List<MedicalServiceCount>> getServiceCountByRange(@RequestParam Date start,@RequestParam Date end){
         return process.getServiceCountByRange(start, end);
+    }
+	
+	@GetMapping("/product/count/range")
+    @CrossOrigin
+    public ResponseEntity<List<ProductCount>> getProductCountByRange(@RequestParam Date start,@RequestParam Date end){
+        return process.getProductCountByRange(start, end);
     }
 	
 }
