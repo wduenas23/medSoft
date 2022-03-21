@@ -38,10 +38,10 @@ public class AuthorizationProcess {
 		try {
 			UserDetail ud=new UserDetail();
 			ShaEncryption sha=new ShaEncryption();
-			String encryptedPassword=ShaEncryption.encrypt(userInfo.getPassword());
-			String decryptedPassword=ShaEncryption.decrypt(encryptedPassword);
-			log.error(encryptedPassword);
-			log.error(decryptedPassword);
+	//		String encryptedPassword=ShaEncryption.encrypt(userInfo.getPassword());
+//			String decryptedPassword=ShaEncryption.decrypt(encryptedPassword);
+//			log.error(encryptedPassword);
+//			log.error(decryptedPassword);
 			User user=userRepository.findUser(userInfo.getUser());
 			if(user!=null) {
 				String decryptedPass=ShaEncryption.decrypt(user.getUsrPassword());
